@@ -162,8 +162,10 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void> {
         Type baseType;
         if (ctx.Identifier() != null)
             baseType = new ClassType(ctx.Identifier().getText());
-        else
+        else {
+            visitCommon_type(ctx.common_type());
             baseType = (Type) mmp.get(ctx.common_type());
+        }
 
         int dimension = (ctx.getChildCount() - 1) / 2;
         if (dimension == 0)
@@ -208,6 +210,7 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void> {
     }
 
     private void visitStatement(Mx_languageParser.StatementContext context) {
+        if (context == null) return;
         if (context instanceof Mx_languageParser.Block_stmtContext)
             visitBlock_stmt((Mx_languageParser.Block_stmtContext) context);
         else if (context instanceof Mx_languageParser.Var_def_stmtContext)
@@ -337,6 +340,7 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void> {
 
     private void visitExpression(Mx_languageParser.ExpressionContext ctx)
     {
+        if (ctx == null) return ;
         if (ctx instanceof Mx_languageParser.Primary_exprContext)
             visitPrimary_expr((Mx_languageParser.Primary_exprContext) ctx);
         else if (ctx instanceof Mx_languageParser.Member_exprContext)
