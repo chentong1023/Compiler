@@ -12,12 +12,15 @@ import Type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class ASTBuilder extends Mx_languageBaseVisitor<Void>
 {
 	private ParseTreeProperty<Object> mmp = new ParseTreeProperty<>();
+	private Set<String> classnameSet = new HashSet<>();
 	private AST ast;
 
 	public ASTBuilder(Mx_languageParser.ProgContext ctx)
@@ -67,9 +70,10 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void>
 				visitClass_definition((Mx_languageParser.Class_definitionContext) context);
 				classEntities.add(((ClassDefNode) mmp.get(context)).getEntity());
 				definitionNodes.add((ClassDefNode) mmp.get(context));
+				classnameSet.add(((ClassDefNode) mmp.get(context)).getName());
 			} else
 				throw new InternalErrorS("ASTBuilder@visitProg With undefined context!");
-		ast = new AST(classEntities, functionEntities, variableEntities, definitionNodes);
+		ast = new AST(classEntities, functionEntities, variableEntities, definitionNodes, classnameSet);
 		return null;
 	}
 
@@ -337,8 +341,14 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void>
 		visitStatement(ctx.statement(0));
 		if (ctx.statement(1) != null)
 			visitStatement(ctx.statement(1));
-		mmp.put(ctx, new IfNode(new Location(ctx), getExpr(ctx.expression()), getStmt(ctx.statement(0)), getStmt(ctx.statement(1))));
+		mmp.put(ctx, new IfNode(new Location(ctx), getExpr(ctx.expression()), getBlocked_Stmt(ctx.statement(0)), getBlocked_Stmt(ctx.statement(1))));
 		return null;
+	}
+
+	private BlockNode getBlocked_Stmt(Mx_languageParser.StatementContext context)
+	{
+		if (context == null) return null;
+		return BlockNode.wrapBlock(getStmt(context));
 	}
 
 	@Override
@@ -346,7 +356,7 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void>
 	{
 		visitExpression(ctx.expression());
 		visitStatement(ctx.statement());
-		mmp.put(ctx, new WhileNode(new Location(ctx), getExpr(ctx.expression()), getStmt(ctx.statement())));
+		mmp.put(ctx, new WhileNode(new Location(ctx), getExpr(ctx.expression()), getBlocked_Stmt(ctx.statement())));
 		return null;
 	}
 
@@ -357,7 +367,7 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void>
 		visitExpression(ctx.cond);
 		visitExpression(ctx.incr);
 		visitStatement(ctx.statement());
-		mmp.put(ctx, new ForNode(new Location(ctx), getExpr(ctx.init), getExpr(ctx.cond), getExpr(ctx.incr), getStmt(ctx.statement())));
+		mmp.put(ctx, new ForNode(new Location(ctx), getExpr(ctx.init), getExpr(ctx.cond), getExpr(ctx.incr), getBlocked_Stmt(ctx.statement())));
 		return null;
 	}
 

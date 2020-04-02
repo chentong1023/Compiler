@@ -5,6 +5,7 @@ import Entity.*;
 import ExceptionS.SemanticError;
 import Type.*;
 
+import java.util.Set;
 import java.util.Stack;
 
 public class SymbolTableChecker extends ASTBaseVisitor
@@ -12,13 +13,22 @@ public class SymbolTableChecker extends ASTBaseVisitor
 	private Stack<Scope> stack = new Stack<>();
 	private Scope topScope;
 	private Scope currentScope;
-	private ClassEntity currentClass;
-	private ParameterEntity currentThis;
+	private ClassEntity currentClass = null;
+	private ParameterEntity currentThis = null;
+	private Set<String> class_sets;
 
 	public SymbolTableChecker(Scope scope)
 	{
 		this.topScope = scope;
 		this.currentScope = scope;
+		stack.push(currentScope);
+	}
+
+	public SymbolTableChecker(Scope topScope, Set<String> class_sets)
+	{
+		this.topScope = topScope;
+		this.class_sets = class_sets;
+		this.currentScope = topScope;
 		stack.push(currentScope);
 	}
 
@@ -113,6 +123,8 @@ public class SymbolTableChecker extends ASTBaseVisitor
 	public Void visit(VariableDefNode node)
 	{
 		VariableEntity entity = node.getEntity();
+		if (class_sets.contains(node.getName()))
+			throw new SemanticError(node.getLocation(), "duplicate variable and class name " + node.getName());
 		if (!checkType(entity.getType()))
 			throw new SemanticError(node.getLocation(), "Variable type is invalid" + entity.getType());
 		if (currentClass == null || currentClass.getScope() != currentScope)

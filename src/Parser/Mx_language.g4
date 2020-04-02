@@ -24,7 +24,7 @@ statement:  block                           # block_stmt
         |   expression ';'                  # expr_stmt
         |   'continue' ';'                  # continue_stmt
         |   'break' ';'                     # break_stmt
-        |   'return' expression?            # return_stmt
+        |   'return' expression? ';'        # return_stmt
         |   ';'                             # blank_stmt
         ;
 

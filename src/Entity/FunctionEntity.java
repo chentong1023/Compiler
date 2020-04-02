@@ -74,6 +74,7 @@ public class FunctionEntity extends Entity {
     public ParameterEntity add_this_parameter(Location location, ClassEntity entity)
     {
         ParameterEntity thisVariable = new ParameterEntity("this", location, entity.getType());
+        thisVariable.setIs_this();
         parameterEntityList.add(0, thisVariable);
         return thisVariable;
     }

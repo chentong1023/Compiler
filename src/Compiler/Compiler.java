@@ -12,13 +12,17 @@ import AST.AST;
 import AST.ASTBuilder;
 import Entity.*;
 import ExceptionS.*;
+import FrontEnd.LexerErrorListener;
 import FrontEnd.ParserErrorListener;
 import Parser.*;
 import Utils.*;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.atn.ATNConfigSet;
+import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 import java.lang.Exception;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,7 +65,7 @@ public class Compiler {
                     display_help();
             }
         }
-        if (input_file == null) is = new FileInputStream("D:\\2020Spring\\Compiler\\Compiler\\test.mx");
+        if (input_file == null) is = System.in;
         else is = new FileInputStream(input_file);
 
         PrintStream os;
@@ -85,6 +89,7 @@ public class Compiler {
 
     static private void compile(PrintStream os) throws Exception {
         Mx_languageLexer lexer = new Mx_languageLexer(CharStreams.fromStream((is)));
+        lexer.addErrorListener(new LexerErrorListener());
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         Mx_languageParser parser = new Mx_languageParser(tokens);
 

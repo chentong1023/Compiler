@@ -8,6 +8,7 @@ public class VariableNode extends LHSNode
 {
 	private Entity entity;
 	private ParameterEntity this_pointer = null;
+	private boolean is_this = false;
 
 	public VariableNode(Location location, String name)
 	{
@@ -30,6 +31,8 @@ public class VariableNode extends LHSNode
 	public void setEntity(Entity entity)
 	{
 		this.entity = entity;
+		if (entity instanceof ParameterEntity)
+			is_this = ((ParameterEntity) entity).isIs_this();
 	}
 
 	public ParameterEntity getThis_pointer()
@@ -45,6 +48,18 @@ public class VariableNode extends LHSNode
 	public boolean is_member()
 	{
 		return this_pointer != null;
+	}
+
+	@Override
+	public boolean is_lvalue()
+	{
+		return !is_this;
+	}
+
+	@Override
+	public boolean is_assignable()
+	{
+		return !is_this;
 	}
 
 	@Override

@@ -10,8 +10,8 @@ public class BreakNode extends StmtNode
 	}
 
 	@Override
-	public <S, E> S accept(ASTVisitor<S, E> vistor)
+	public <S, E> S accept(ASTVisitor<S, E> visitor)
 	{
-		return null;
+		return visitor.visit(this);
 	}
 }

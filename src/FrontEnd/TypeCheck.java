@@ -1,9 +1,7 @@
 package FrontEnd;
 
 import AST.*;
-import Entity.FunctionEntity;
-import Entity.ParameterEntity;
-import Entity.Scope;
+import Entity.*;
 import ExceptionS.InternalErrorS;
 import ExceptionS.SemanticError;
 import Parser.*;
@@ -84,7 +82,7 @@ public class TypeCheck extends ASTBaseVisitor
 	public Void visit(WhileNode node)
 	{
 		visitExpr(node.getCond());
-		if (node.getCond() != null)
+		if (node.getBody() != null)
 		{
 			loopDepth++;
 			visitStmt(node.getBody());
@@ -169,7 +167,7 @@ public class TypeCheck extends ASTBaseVisitor
 			throw new SemanticError(node.getLocation(), "LHS of '=' is not assignable");
 		checkCompatibility(node.getLocation(), node.getLhs().getType(), node.getRhs().getType(), false);
 		level--;
-		return super.visit(node);
+		return null;
 	}
 
 	@Override
@@ -237,6 +235,7 @@ public class TypeCheck extends ASTBaseVisitor
 				checkCompatibility(node.getLeft_son().getLocation(), ltype, intType, true);
 				checkCompatibility(node.getRight_son().getLocation(), rtype, intType, true);
 				node.setType(ltype);
+				break;
 			case GT:
 			case LE:
 			case GE:
@@ -249,11 +248,16 @@ public class TypeCheck extends ASTBaseVisitor
 			case EQ:
 			case NE:
 				checkCompatibility(node.getLocation(), ltype, rtype, true);
+				if(!ltype.is_half_comparable() && !rtype.is_half_comparable())
+					throw new SemanticError(node.getLocation(), "Cannot compare two " + ltype);
+				node.setType(boolType);
+				break;
 			case LOGIC_OR:
 			case LOGIC_AND:
 				checkCompatibility(node.getLeft_son().getLocation(), ltype, boolType, true);
 				checkCompatibility(node.getRight_son().getLocation(), rtype, boolType, true);
 				node.setType(ltype);
+				break;
 			case ADD:
 				checkCompatibility(node.getLocation(), ltype, rtype, true);
 				if (!ltype.is_int() && !ltype.is_string())
@@ -332,6 +336,56 @@ public class TypeCheck extends ASTBaseVisitor
 			throw new SemanticError(node.getLocation(), "Invalid reference of " + node.getExpr().getType() + ", expecting an array");
 		checkCompatibility(node.getIndx().getLocation(), node.getIndx().getType(), intType, true);
 		node.setType(((ArrayType) node.getExpr().getType()).getBase_type());
+		level--;
+		return null;
+	}
+
+	@Override
+	public Void visit(CreatorNode node)
+	{
+		level++;
+		if (node.getExprs() != null)
+		{
+			for (ExprNode exprNode : node.getExprs())
+			{
+				visitExpr(exprNode);
+				checkCompatibility(exprNode.getLocation(), exprNode.getType(), intType, true);
+			}
+		}
+		level--;
+		return null;
+	}
+
+	@Override
+	public Void visit(MemberNode node)
+	{
+		level++;
+		visitExpr(node.getExpr());
+		Type type = node.getExpr().getType();
+
+		if (type.is_class())
+		{
+			ClassEntity entity = ((ClassType) type).getEntity();
+			Entity member = entity.getScope().lookup_current_level(node.getMember());
+			if (member == null)
+				throw new SemanticError(node.getLocation(), "Not Find member named \"" + node.getMember() + "\"");
+			node.setEntity(member);
+			node.setType(member.getType());
+		}
+		else if (type.is_array() || type.is_string())
+		{
+			Entity member;
+			if (type.is_array())
+				member = ArrayType.getScope().lookup_current_level(node.getMember());
+			else
+				member = StringType.getScope().lookup_current_level(node.getMember());
+			if (member == null)
+				throw new SemanticError(node.getLocation(), "Not Find member named \"" + node.getMember() + "\"");
+			node.setEntity(member);
+			node.setType(member.getType());
+		}
+		else
+			throw new SemanticError(node.getLocation(), "Invalid type to use member operation " + node.getExpr().getType() + ", expecting class, array or string!");
 		level--;
 		return null;
 	}

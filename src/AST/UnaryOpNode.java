@@ -12,7 +12,6 @@ public class UnaryOpNode extends ExprNode
 
 	private UnaryOp operator;
 	private ExprNode expr;
-	private Type type;
 	private long amount;
 
 	public UnaryOpNode(UnaryOp operator, ExprNode expr)
@@ -40,7 +39,7 @@ public class UnaryOpNode extends ExprNode
 
 	public Type getType()
 	{
-		return type;
+		return expr.getType();
 	}
 
 	public long getAmount()

@@ -1,5 +1,6 @@
 package AST;
 
+import ExceptionS.InternalErrorS;
 import FrontEnd.ASTVisitor;
 import Type.Type;
 
@@ -31,7 +32,7 @@ public class BinaryOpNode extends ExprNode
 
 	public Type getType()
 	{
-		return type;
+		return type != null ? type : left_son.getType();
 	}
 
 	public BinaryOp getOperator()
@@ -46,8 +47,8 @@ public class BinaryOpNode extends ExprNode
 
 	public void setType(Type type)
 	{
-		if (this.type != null)
-			throw new Error("setType@BinaryOp called Twice");
+		//if (this.type != null)
+		//	throw new InternalErrorS(getLocation(), "setType@BinaryOp called Twice, " + this.type +" to " + type + "\ndebug info : " + this.left_son.getType() + " " + this.right_son.getType());
 		this.type = type;
 	}
 
