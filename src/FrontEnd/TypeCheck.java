@@ -335,6 +335,4 @@ public class TypeCheck extends ASTBaseVisitor
 		level--;
 		return null;
 	}
-
-
 }
