@@ -42,21 +42,19 @@ public class FuncallNode extends ExprNode
 		return (FunctionType) expr.getType();
 	}
 
-	@Override
-	public Type getType()
-	{
-		return function_type().getEntity().getReturn_type();
-	}
-
-	@Override
-	public Location getLocation()
-	{
-		return expr.getLocation();
-	}
-
-	@Override
-	public <S, E> E accept(ASTVisitor<S, E> visitor)
-	{
-		return visitor.visit(this);
-	}
+    @Override
+    public Type getType()
+    {
+        return function_type().getEntity().getReturn_type();
+    }
+    @Override
+    public Location getLocation()
+    {
+        return expr.getLocation();
+    }
+    @Override
+    public <S, E> E accept(ASTVisitor<S, E> visitor)
+    {
+        return visitor.visit(this);
+    }
 }

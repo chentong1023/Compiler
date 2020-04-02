@@ -1,11 +1,11 @@
 /*
- *
- * Mx*-Compiler, a project of ACM class 2018
- * Work in Spring 2020
- * Version : 0.1
- * Author : Tong, CHEN
- *
- * */
+*
+* Mx*-Compiler, a project of ACM class 2018
+* Work in Spring 2020
+* Version : 0.1
+* Author : Tong, CHEN
+*
+* */
 package Compiler;
 
 import AST.AST;
@@ -17,7 +17,6 @@ import Parser.*;
 import Utils.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-
 import java.io.*;
 import java.lang.Exception;
 import java.util.LinkedList;
@@ -30,92 +29,87 @@ import static Utils.LibFunction.LIB_PREFIX;
 import static java.lang.System.exit;
 import static java.lang.System.in;
 
-public class Compiler
-{
-	static private InputStream is;
-	static private String input_file = null;
-	static private String output_file = null;
+public class Compiler {
+    static private InputStream is;
+    static private String input_file = null;
+    static private String output_file = null;
 
-	static public void display_help()
-	{
-		System.out.println("==== Help ====");
-		System.out.println("if you only want semantic check, plese use \"./semantic.bash [-i <filename>]\" ");
-		System.out.println("if you want compile without optimize, use \"./codegen.bash [-i <filename>] [-o <filename>]\"");
-		System.out.println("if you want compile with few optimizes, use \"./optim.bash [-i <filename>] [-o <filename>]\"");
-	}
+    static public void display_help()
+    {
+        System.out.println("==== Help ====");
+        System.out.println("if you only want semantic check, plese use \"./semantic.bash [-i <filename>]\" ");
+        System.out.println("if you want compile without optimize, use \"./codegen.bash [-i <filename>] [-o <filename>]\"");
+        System.out.println("if you want compile with few optimizes, use \"./optim.bash [-i <filename>] [-o <filename>]\"");
+    }
 
-	static public void main(String[] args) throws Exception
-	{
-		for (int i = 0; i < args.length; ++i)
-		{
-			switch (args[i])
-			{
-				case "-i":
-					if (i + 1 >= args.length)
-						break;
-					else input_file = args[++i];
-					break;
-				case "-o":
-					if (i + 1 >= args.length)
-						break;
-					else output_file = args[++i];
-					break;
-				case "--help":
-					display_help();
-			}
-		}
-		if (input_file == null)
-			is = System.in;
-		else is = new FileInputStream(input_file);
+    static public void main(String[] args) throws Exception {
+        for (int i = 0; i < args.length; ++i)
+        {
+            switch (args[i])
+            {
+                case "-i":
+                    if (i + 1 >= args.length)
+                        break;
+                    else input_file = args[++i];
+                    break;
+                case "-o":
+                    if (i + 1 >= args.length)
+                        break;
+                    else output_file = args[++i];
+                    break;
+                case "--help":
+                    display_help();
+            }
+        }
+        if (input_file == null) is = new FileInputStream("D:\\2020Spring\\Compiler\\Compiler\\test.mx");
+        else is = new FileInputStream(input_file);
 
-		PrintStream os;
-		if (output_file == null) os = System.out;
-		else os = new PrintStream(new FileOutputStream(output_file));
+        PrintStream os;
+        if (output_file == null) os = System.out;
+        else os = new PrintStream(new FileOutputStream(output_file));
 
-		try
-		{
-			compile(os);
-		} catch (SemanticError | InternalErrorS error)
-		{
-			System.err.println(error.getMessage());
-			exit(1);
-		} catch (Exception error)
-		{
-			error.printStackTrace();
-			exit(1);
-		}
-		exit(0);
-	}
+        try {
+            compile(os);
+        }
+        catch (SemanticError | InternalErrorS error)
+        {
+            System.err.println(error.getMessage());
+            exit(1);
+        } catch (Exception error)
+        {
+            error.printStackTrace();
+            exit(1);
+        }
+        exit(0);
+    }
 
-	static private void compile(PrintStream os) throws Exception
-	{
-		Mx_languageLexer lexer = new Mx_languageLexer(CharStreams.fromStream((is)));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		Mx_languageParser parser = new Mx_languageParser(tokens);
+    static private void compile(PrintStream os) throws Exception {
+        Mx_languageLexer lexer = new Mx_languageLexer(CharStreams.fromStream((is)));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        Mx_languageParser parser = new Mx_languageParser(tokens);
 
-		parser.removeErrorListeners();
-		parser.addErrorListener(new ParserErrorListener());
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ParserErrorListener());
 
-		ASTBuilder builder = new ASTBuilder(parser.prog());
-		AST ast = builder.getAst();
-		ast.load_library(getSystemFunc());
-		Type.initialize_builtin_type();
-		ast.checkSymbolTable();
-		ast.checkType();
-	}
+        ASTBuilder builder = new ASTBuilder(parser.prog());
+        AST ast = builder.getAst();
+        ast.load_library(getSystemFunc());
+        Type.initialize_builtin_type();
+        ast.checkSymbolTable();
+        ast.checkType();
+    }
 
-	private static List<Entity> getSystemFunc()
-	{
-		List<Entity> func = new LinkedList<>();
-		func.add(new LibFunction(voidType, "print", new Type[]{stringType}).getEntity());
-		func.add(new LibFunction(voidType, "println", new Type[]{stringType}).getEntity());
-		func.add(new LibFunction(stringType, "getString", null).getEntity());
-		func.add(new LibFunction(integerType, "getInt", null).getEntity());
-		func.add(new LibFunction(stringType, "toString", new Type[]{integerType}).getEntity());
-		func.add(new LibFunction(integerType, "printInt", new Type[]{integerType}).getEntity());
-		func.add(new LibFunction(integerType, "printlnInt", new Type[]{integerType}).getEntity());
-		func.add(new LibFunction(integerType, "malloc", new Type[]{integerType}).getEntity());
-		func.add(new VariableEntity("null", null, nullType, null));
-		return func;
-	}
+    private static List<Entity> getSystemFunc() {
+        List<Entity> func = new LinkedList<>();
+        func.add(new LibFunction(voidType, "print", new Type[]{stringType}).getEntity());
+        func.add(new LibFunction(voidType, "println", new Type[]{stringType}).getEntity());
+        func.add(new LibFunction(stringType, "getString", null).getEntity());
+        func.add(new LibFunction(integerType, "getInt", null).getEntity());
+        func.add(new LibFunction(stringType, "toString", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType, "printInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType, "printlnInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType, "malloc", new Type[]{integerType}).getEntity());
+        func.add(new VariableEntity("null", null, nullType, null));
+        return func;
+    }
 }

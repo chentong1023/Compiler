@@ -1,6 +1,5 @@
 package ExceptionS;
 
-public class CompileException extends Throwable
-{
+public class CompileException extends Throwable {
 
 }
