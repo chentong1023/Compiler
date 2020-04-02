@@ -2,31 +2,47 @@ package Type;
 
 import Entity.FunctionEntity;
 
-public class FunctionType extends Type {
-    private FunctionEntity entity;
+public class FunctionType extends Type
+{
+	private FunctionEntity entity;
 
-    public FunctionType(String name) {super(name);}
+	public FunctionType(String name)
+	{
+		super(name);
+	}
 
-    @Override
-    public int getSize() {return 0;}
-    @Override
-    public String toString() {return "Function :" + entity.getName();}
+	@Override
+	public int getSize()
+	{
+		return 0;
+	}
 
-    public FunctionEntity getEntity() {
-        return entity;
-    }
+	@Override
+	public String toString()
+	{
+		return "Function :" + entity.getName();
+	}
 
-    public void setEntity(FunctionEntity entity) {
-        this.entity = entity;
-    }
+	public FunctionEntity getEntity()
+	{
+		return entity;
+	}
 
-    @Override
-    public boolean is_function() {return true;}
+	public void setEntity(FunctionEntity entity)
+	{
+		this.entity = entity;
+	}
 
-    @Override
-    public boolean is_compatible(Type other)
-    {
-        if (!other.is_function()) return false;
-        return entity.equals(((FunctionType)other).entity);
-    }
+	@Override
+	public boolean is_function()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean is_compatible(Type other)
+	{
+		if (!other.is_function()) return false;
+		return entity.equals(((FunctionType) other).entity);
+	}
 }
