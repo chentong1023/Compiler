@@ -72,7 +72,8 @@ literal: DecimalInteger     # int_const
     |   'null'              # null_const
     ;
 
-creator: (Identifier | common_type) ('['expression']')+ ('['']')*   # array_creator
+creator: (Identifier | common_type) ('['expression']')+ ('['']')+ ('['expression']')+   # error_creator
+    |   (Identifier | common_type) ('['expression']')+ ('['']')*   # array_creator
     |   Identifier '(' ')'                                          # constructor
     |   Identifier                                                  # single_creator
     ;

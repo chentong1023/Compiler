@@ -311,6 +311,13 @@ public class Mx_languageBaseVisitor<T> extends AbstractParseTreeVisitor<T> imple
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitError_creator(Mx_languageParser.Error_creatorContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitArray_creator(Mx_languageParser.Array_creatorContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

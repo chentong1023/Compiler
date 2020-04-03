@@ -292,6 +292,13 @@ public interface Mx_languageVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNull_const(Mx_languageParser.Null_constContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code error_creator}
+	 * labeled alternative in {@link Mx_languageParser#creator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitError_creator(Mx_languageParser.Error_creatorContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code array_creator}
 	 * labeled alternative in {@link Mx_languageParser#creator}.
 	 * @param ctx the parse tree

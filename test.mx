@@ -1,26 +1,11 @@
 /*
 Test Package: Sema_Local_Preview
-Test Target: Classes
-Author: 15' Yueyang Xianzang
-Time: 2019-10-20
+Test Target: Basic
+Author: 16' Lizhen Zhu
+Time: 2019-11-11
 Verdict: Fail
-Comment: The variable A and class A is dumplicated.
-Origin Package: Semantic Extended
+Comment: The assignment of 2-D array should follow the order from the first dimension.
+Origin Package: Semantic Pretest
 */
-class A
-{
-    A func()
-    {
-        A a=this;
-        a=null;
-        return this;
-    }
-    int a;
-}
-int main()
-{
-    A A;
-    A.func();
-    A.func();
-    return 0;
-}
+int main(){}
+int[] graph = new int [];

@@ -486,6 +486,18 @@ public interface Mx_languageListener extends ParseTreeListener {
 	 */
 	void exitNull_const(Mx_languageParser.Null_constContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code error_creator}
+	 * labeled alternative in {@link Mx_languageParser#creator}.
+	 * @param ctx the parse tree
+	 */
+	void enterError_creator(Mx_languageParser.Error_creatorContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code error_creator}
+	 * labeled alternative in {@link Mx_languageParser#creator}.
+	 * @param ctx the parse tree
+	 */
+	void exitError_creator(Mx_languageParser.Error_creatorContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code array_creator}
 	 * labeled alternative in {@link Mx_languageParser#creator}.
 	 * @param ctx the parse tree

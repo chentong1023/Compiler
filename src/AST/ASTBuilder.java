@@ -708,7 +708,10 @@ public class ASTBuilder extends Mx_languageBaseVisitor<Void>
 			visitConstructor((Mx_languageParser.ConstructorContext) creator);
 		else if (creator instanceof Mx_languageParser.Single_creatorContext)
 			visitSingle_creator((Mx_languageParser.Single_creatorContext) creator);
-		else throw new InternalErrorS("ASTBuilder@visitCreator Invalid context : " + creator.getText());
+		else if (creator instanceof Mx_languageParser.Error_creatorContext)
+			throw new SemanticError(new Location(creator), "The shape of multidimensional array must be specified from left to right.");
+		else
+			throw new InternalErrorS("ASTBuilder@visitCreator Invalid context : " + creator.getText());
 	}
 
 	@Override
