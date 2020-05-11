@@ -21,6 +21,12 @@ public class VariableNode extends LHSNode
 		this.entity = variable;
 	}
 
+	public VariableNode(Entity entity, Location location)
+	{
+		super(entity.getName(), location);
+		this.entity = entity;
+	}
+
 	public Entity getEntity()
 	{
 		if (entity == null)

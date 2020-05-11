@@ -22,7 +22,7 @@ public class ArrayType extends Type {
     static public void initialize_builtin_function()
     {
         scope = new Scope(true);
-        scope.insert(new LibFunction(integerType, "size", new Type[]{magicArray}).getEntity());
+        scope.insert(new LibFunction(integerType, "size", LibFunction.LIB_PREFIX + "array_size", new Type[]{magicArray}).getEntity());
     }
 
     static private Scope scope;

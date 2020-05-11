@@ -1,6 +1,8 @@
 package Entity;
 
 import AST.*;
+import IR.IR;
+import IR.Label;
 import Type.*;
 
 import java.util.*;
@@ -59,6 +61,18 @@ public class FunctionEntity extends Entity {
         this.is_lib_function = is_lib_function;
     }
 
+    private String asm_name;
+
+    public String getAsm_name()
+    {
+        return asm_name == null ? getName() : asm_name;
+    }
+
+    public void setAsm_name(String asm_name)
+    {
+        this.asm_name = asm_name;
+    }
+
     public String toString() {return "Function Entity:" + getName();}
 
     private Scope scope;
@@ -78,4 +92,43 @@ public class FunctionEntity extends Entity {
         parameterEntityList.add(0, thisVariable);
         return thisVariable;
     }
+
+    private Set<FunctionEntity> calls = new HashSet<>();
+    public void add_call(FunctionEntity entity) {calls.add(entity);}
+
+    public Set<FunctionEntity> getCalls()
+    {
+        return calls;
+    }
+
+    private Label begin_label_IR, end_label_IR;
+    public void set_label_IR(Label begin_label_IR, Label end_label_IR)
+    {
+        this.begin_label_IR = begin_label_IR;
+        this.end_label_IR = end_label_IR;
+    }
+
+    public Label getBegin_label_IR()
+    {
+        return begin_label_IR;
+    }
+
+    public Label getEnd_label_IR()
+    {
+        return end_label_IR;
+    }
+
+    private List<IR> irs;
+
+    public List<IR> getIrs()
+    {
+        return irs;
+    }
+
+    public void setIrs(List<IR> irs)
+    {
+        this.irs = irs;
+    }
+
+
 }

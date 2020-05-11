@@ -41,8 +41,8 @@ public class CreatorNode extends ExprNode
 	}
 
 	@Override
-	public <S, E> E accept(ASTVisitor<S, E> vistor)
+	public <S, E> E accept(ASTVisitor<S, E> visitor)
 	{
-		return vistor.visit(this);
+		return visitor.visit(this);
 	}
 }

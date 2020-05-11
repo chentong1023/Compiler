@@ -36,10 +36,10 @@ public class StringType extends Type {
         operatorGE = new LibFunction(stringType, LIB_PREFIX + "str_operator_GE", new Type[] {stringType, stringType}).getEntity();
 
         scope = new Scope(true);
-        scope.insert(new LibFunction(integerType, "length", new Type[] {stringType}).getEntity());
-        scope.insert(new LibFunction(stringType, "substring", new Type[] {stringType, integerType, integerType}).getEntity());
-        scope.insert(new LibFunction(integerType, "parseInt", new Type[] {stringType}).getEntity());
-        scope.insert(new LibFunction(integerType, "ord", new Type[] {stringType, integerType}).getEntity());
+        scope.insert(new LibFunction(integerType, "length", LIB_PREFIX + "str_length", new Type[] {stringType}).getEntity());
+        scope.insert(new LibFunction(stringType, "substring", LIB_PREFIX + "str_substring", new Type[] {stringType, integerType, integerType}).getEntity());
+        scope.insert(new LibFunction(integerType, "parseInt", LIB_PREFIX + "str_parseInt", new Type[] {stringType}).getEntity());
+        scope.insert(new LibFunction(integerType, "ord", LIB_PREFIX + "str_ord", new Type[] {stringType, integerType}).getEntity());
 
         scope.insert(operatorADD);
         scope.insert(operatorLT);

@@ -10,6 +10,7 @@ package Compiler;
 
 import AST.AST;
 import AST.ASTBuilder;
+import BackEnd.IRBuilder;
 import Entity.*;
 import ExceptionS.*;
 import FrontEnd.LexerErrorListener;
@@ -17,12 +18,9 @@ import FrontEnd.ParserErrorListener;
 import Parser.*;
 import Utils.*;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATNConfigSet;
-import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.*;
+
 import java.io.*;
 import java.lang.Exception;
-import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +29,6 @@ import Type.*;
 import static Type.Type.*;
 import static Utils.LibFunction.LIB_PREFIX;
 import static java.lang.System.exit;
-import static java.lang.System.in;
 
 public class Compiler {
     static private InputStream is;
@@ -63,6 +60,8 @@ public class Compiler {
                     break;
                 case "--help":
                     display_help();
+                case "--ir-output":
+                    Defines.Output_Tree_IR = true;
             }
         }
         if (input_file == null) is = System.in;
@@ -102,18 +101,21 @@ public class Compiler {
         Type.initialize_builtin_type();
         ast.checkSymbolTable();
         ast.checkType();
+
+        IRBuilder irBuilder = new IRBuilder(ast);
+        irBuilder.generate_IR();
     }
 
     private static List<Entity> getSystemFunc() {
         List<Entity> func = new LinkedList<>();
-        func.add(new LibFunction(voidType, "print", new Type[]{stringType}).getEntity());
-        func.add(new LibFunction(voidType, "println", new Type[]{stringType}).getEntity());
+        func.add(new LibFunction(voidType, "print", "print", new Type[]{stringType}).getEntity());
+        func.add(new LibFunction(voidType, "println", "puts", new Type[]{stringType}).getEntity());
         func.add(new LibFunction(stringType, "getString", null).getEntity());
         func.add(new LibFunction(integerType, "getInt", null).getEntity());
         func.add(new LibFunction(stringType, "toString", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType, "printInt", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType, "printlnInt", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType, "malloc", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,   LIB_PREFIX + "printInt", LIB_PREFIX + "printInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,  LIB_PREFIX + "printlnInt", LIB_PREFIX + "printlnInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,  LIB_PREFIX + "malloc", LIB_PREFIX + "malloc",new Type[]{integerType}).getEntity());
         func.add(new VariableEntity("null", null, nullType, null));
         return func;
     }

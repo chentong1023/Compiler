@@ -22,6 +22,12 @@ public class LibFunction {
         entity.setIs_lib_function(true);
     }
 
+    public LibFunction(Type returnType, String name, String asmName, Type [] paramTypes)
+    {
+        this(returnType, name, paramTypes);
+        entity.setAsm_name(asmName);
+    }
+
     public FunctionEntity getEntity() {
         return entity;
     }
