@@ -1,7 +1,10 @@
 package IR;
 
+import Operand.Operand;
+
 public class Unary extends Expr
 {
+
 	public enum UnaryOp {MINUS, LOGIC_NOT, BIT_NOT};
 	private Expr expr;
 	private UnaryOp operator;
@@ -30,5 +33,12 @@ public class Unary extends Expr
 	public UnaryOp getOperator()
 	{
 		return operator;
+	}
+
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

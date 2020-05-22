@@ -22,16 +22,6 @@ public class InsLabel extends Instruction
 		return name;
 	}
 
-	public Set<Reference> getBring_use()
-	{
-		return bring_use;
-	}
-
-	public void setBring_use(Set<Reference> bring_use)
-	{
-		this.bring_use = bring_use;
-	}
-
 	public BasicBlock getBasicBlock()
 	{
 		return basicBlock;
@@ -42,9 +32,20 @@ public class InsLabel extends Instruction
 		this.basicBlock = basicBlock;
 	}
 
+	public Set<Reference> getBring_use()
+	{
+		return bring_use;
+	}
+
+	public void setBring_use(Set<Reference> bring_use)
+	{
+		this.bring_use = bring_use;
+	}
+
 	@Override
 	public void replace_use(Reference from, Reference to)
 	{
+
 	}
 
 	@Override
@@ -65,5 +66,15 @@ public class InsLabel extends Instruction
 
 	}
 
-	public String toString() {return name;}
+	@Override
+	public void accept(INSVisitor visitor)
+	{
+		visitor.visit(this);
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

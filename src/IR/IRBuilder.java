@@ -1,4 +1,4 @@
-package BackEnd;
+package IR;
 
 import AST.*;
 import Entity.*;
@@ -9,10 +9,10 @@ import IR.Binary.BinaryOp;
 import Type.*;
 import javafx.util.Pair;
 
+import java.lang.reflect.GenericArrayType;
 import java.util.*;
 
-import static Compiler.Defines.CLASS_MEMBER_ALIGNMENT_SIZE;
-import static Compiler.Defines.Output_Tree_IR;
+import static Compiler.Defines.*;
 import static IR.Binary.BinaryOp.ADD;
 import static IR.Binary.BinaryOp.SUB;
 import static Type.StringType.*;
@@ -198,11 +198,60 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		}
 	}
 
+	private int inline_mode = 0;
+	private Stack<Map<Entity, Entity>> inline_map = new Stack<>();
+	private int inline_cnt = 0;
+	private Var inline_no_use = new Var(new VariableEntity(null, null, null, null));
+	private Stack<Label> inline_return_label = new Stack<>();
+	private Stack<Var> inline_return_var = new Stack<>();
+	private void inline_function(FunctionEntity entity, Var return_var, List<Expr> args)
+	{
+		Label return_label = new Label();
+		Map<Entity, Entity> map = new HashMap<>();
+		inline_map.push(map);
+		inline_return_label.push(return_label);
+		inline_return_var.push(return_var);
+		Scope scope = new Scope(current_scope);
+		Iterator<Expr> iterator = args.iterator();
+		for (ParameterEntity parameterEntity : entity.getParameterEntityList())
+		{
+			VariableEntity variableEntity = new VariableEntity(parameterEntity.getName() + "_inline_" + inline_cnt++, parameterEntity.getLocation(), parameterEntity.getType(), null);
+			scope.insert(variableEntity);
+			map.put(parameterEntity, variableEntity);
+			add_assign(new Var(variableEntity), iterator.next());
+		}
+		current_scope = scope;
+		scopeStack.push(current_scope);
+
+		inline_mode++;
+		visit(entity.getBody());
+		add_label(return_label, "inline_return_" + entity.getName());
+		inline_mode--;
+		scopeStack.pop();
+		current_scope = scopeStack.peek();
+		inline_map.pop();
+		inline_return_label.pop();
+		inline_return_var.pop();
+	}
 
 	@Override
 	public Void visit(BlockNode node)
 	{
 		Scope new_scope = node.getScope();
+		if (inline_mode > 0)
+		{
+			new_scope = new Scope(current_scope);
+			Map<Entity, Entity> map = inline_map.peek();
+			for (Entity entity : node.getScope().getEntities().values())
+			{
+				if (entity instanceof VariableEntity)
+				{
+					VariableEntity buffer = ((VariableEntity) entity).copy();
+					new_scope.insert(buffer);
+					map.put(entity, buffer);
+				}
+			}
+		}
 		current_scope = new_scope;
 		scopeStack.push(current_scope);
 		for (StmtNode stmt : node.getStmts())
@@ -255,14 +304,16 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	@Override
 	public Void visit(WhileNode node)
 	{
-		visit_loop(null, node.getCond(), null, node.getBody());
+		if (!node.isIs_output_irrelevant())
+			visit_loop(null, node.getCond(), null, node.getBody());
 		return null;
 	}
 
 	@Override
 	public Void visit(ForNode node)
 	{
-		visit_loop(node.getInit(), node.getCond(), node.getIncr(), node.getBody());
+		if (!node.isIs_output_irrelevant())
+			visit_loop(node.getInit(), node.getCond(), node.getIncr(), node.getBody());
 		return null;
 	}
 
@@ -388,19 +439,32 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		{
 			args.add(visit_expr(arg));
 		}
-		if (expr_depth > 1)
+		if (Enable_Function_Inline && entity.is_inlined() || (entity == current_function && entity.self_inline(inline_mode)))
 		{
-			if (not_use_tmp)
-				return new Call(entity, args);
-			else
+			if (expr_depth > 1)
 			{
 				Var tmp = new_int_tmp();
-				add_assign(tmp, new Call(entity, args));
+				inline_function(entity, tmp, args);
 				return tmp;
 			}
+			else
+				inline_function(entity, inline_no_use, args);
 		}
 		else
-			stmts.add(new Call(entity, args));
+		{
+			if (expr_depth > 1)
+			{
+				if (not_use_tmp)
+					return new Call(entity, args);
+				else
+				{
+					Var tmp = new_int_tmp();
+					add_assign(tmp, new Call(entity, args));
+					return tmp;
+				}
+			} else
+				stmts.add(new Call(entity, args));
+		}
 		return null;
 	}
 
@@ -740,6 +804,8 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	{
 		Expr lhs = visit_expr(node.getLhs());
 		Expr rhs = null;
+		if (expr_depth <= 1 && node.isIs_output_irrelevant())
+			return null;
 		if (lhs instanceof Var)
 		{
 			Entity entity = ((Var) lhs).getEntity();
@@ -829,7 +895,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	public Void visit(VariableDefNode node)
 	{
 		ExprNode init = node.getEntity().getInitializer();
-		if (init != null)
+		if (init != null && !node.getEntity().isIs_output_irrelevant())
 		{
 			ExprStmtNode assign = new ExprStmtNode(node.getLocation(), new AssignNode(new VariableNode(node.getEntity(), node.getLocation()), init));
 			visit(assign);
@@ -843,11 +909,20 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		clear_assign_table();
 		refresh_tmp_stack();
 		expr_depth++;
-		if (node.getExpr() == null)
-			stmts.add(new Return(null));
+		if (inline_mode > 0)
+		{
+			if (node.getExpr() != null && inline_return_var.peek() != inline_no_use)
+				add_assign(inline_return_var.peek(), visit_expr(node.getExpr()));
+			stmts.add(new Jump(inline_return_label.peek()));
+		}
 		else
-			stmts.add(new Return(visit_expr(node.getExpr())));
-		stmts.add(new Jump(current_function.getEnd_label_IR()));
+		{
+			if (node.getExpr() == null)
+				stmts.add(new Return(null));
+			else
+				stmts.add(new Return(visit_expr(node.getExpr())));
+			stmts.add(new Jump(current_function.getEnd_label_IR()));
+		}
 		expr_depth--;
 		return null;
 	}

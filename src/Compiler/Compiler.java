@@ -10,7 +10,7 @@ package Compiler;
 
 import AST.AST;
 import AST.ASTBuilder;
-import BackEnd.IRBuilder;
+import IR.IRBuilder;
 import Entity.*;
 import ExceptionS.*;
 import FrontEnd.LexerErrorListener;

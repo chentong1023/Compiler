@@ -1,5 +1,7 @@
 package IR;
 
+import Operand.Operand;
+
 public class Assign extends IR
 {
 	Expr left, right;
@@ -24,5 +26,11 @@ public class Assign extends IR
 	public String toString()
 	{
 		return left + " = " + right;
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

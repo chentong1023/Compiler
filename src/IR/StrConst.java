@@ -1,6 +1,7 @@
 package IR;
 
 import Entity.StringConstantEntity;
+import Operand.Operand;
 
 public class StrConst extends Expr
 {
@@ -14,5 +15,11 @@ public class StrConst extends Expr
 	public StringConstantEntity getEntity()
 	{
 		return entity;
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

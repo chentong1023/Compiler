@@ -1,5 +1,7 @@
 package IR;
 
+import Operand.Operand;
+
 public class CJump extends IR
 {
 	private Expr condition;
@@ -31,5 +33,11 @@ public class CJump extends IR
 	public String toString()
 	{
 		return "CJump : " + condition + " -> " + true_label + " | " + false_label;
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

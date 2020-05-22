@@ -32,4 +32,16 @@ abstract public class Node
 			out += " ";
 		System.out.println(out + this.getName() + " " + this.getLocation().toString());
 	}
+
+	private boolean is_output_irrelevant = false;
+
+	public boolean isIs_output_irrelevant()
+	{
+		return is_output_irrelevant;
+	}
+
+	public void setIs_output_irrelevant(boolean is_output_irrelevant)
+	{
+		this.is_output_irrelevant = is_output_irrelevant;
+	}
 }

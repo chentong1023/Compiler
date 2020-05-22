@@ -1,5 +1,6 @@
 package INS;
 
+import AST.FunctionDefNode;
 import Entity.FunctionEntity;
 import Operand.Operand;
 import Operand.Reference;
@@ -39,24 +40,24 @@ public class InsCall extends Instruction
 		return ret;
 	}
 
-	public void setRet(Operand ret)
-	{
-		this.ret = ret;
-	}
-
 	public Set<Reference> getCallorsave()
 	{
 		return callorsave;
 	}
 
-	public void setCallorsave(Set<Reference> callorsave)
-	{
-		this.callorsave = callorsave;
-	}
-
 	public Set<Reference> getUsed_parameter_register()
 	{
 		return used_parameter_register;
+	}
+
+	public void setRet(Operand ret)
+	{
+		this.ret = ret;
+	}
+
+	public void setCallorsave(Set<Reference> callorsave)
+	{
+		this.callorsave = callorsave;
 	}
 
 	public void setUsed_parameter_register(Set<Reference> used_parameter_register)
@@ -69,7 +70,9 @@ public class InsCall extends Instruction
 	{
 		List<Operand> new_operands = new LinkedList<>();
 		for (Operand operand : operands)
+		{
 			new_operands.add(operand.replace(from, to));
+		}
 		operands = new_operands;
 
 		Set<Reference> new_para_reg = new HashSet<>();
@@ -103,6 +106,24 @@ public class InsCall extends Instruction
 			{
 				use.addAll(reference.get_all_ref());
 			}
-		all_ref.addAll(use); all_ref.addAll(def);
+		all_ref.addAll(use);
+		all_ref.addAll(def);
+	}
+
+	@Override
+	public void accept(INSVisitor visitor)
+	{
+		visitor.visit(this);
+	}
+
+	@Override
+	public String toString()
+	{
+		String args = "";
+		for (Operand operand : operands)
+		{
+			args += ", " + operand;
+		}
+		return ret + " = call " + entity.getAsm_name() + args;
 	}
 }

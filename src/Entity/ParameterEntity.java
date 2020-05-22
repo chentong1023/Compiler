@@ -1,6 +1,7 @@
 package Entity;
 
 import AST.Location;
+import Operand.Reference;
 import Type.Type;
 
 public class ParameterEntity extends Entity {
@@ -15,5 +16,17 @@ public class ParameterEntity extends Entity {
     public ParameterEntity(String name, Location location, Type type)
     {
         super(name, location, type);
+    }
+
+    private Reference source;
+
+    public Reference getSource()
+    {
+        return source;
+    }
+
+    public void setSource(Reference source)
+    {
+        this.source = source;
     }
 }

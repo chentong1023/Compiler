@@ -10,8 +10,14 @@ public class Add extends Bin
 	}
 
 	@Override
-	public String getName()
+	public String name()
 	{
 		return "add";
+	}
+
+	@Override
+	public void accept(INSVisitor visitor)
+	{
+		visitor.visit(this);
 	}
 }

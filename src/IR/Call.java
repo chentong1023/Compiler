@@ -1,6 +1,7 @@
 package IR;
 
 import Entity.FunctionEntity;
+import Operand.Operand;
 
 import java.util.List;
 
@@ -29,5 +30,11 @@ public class Call extends Expr
 	public String toString()
 	{
 		return "Call : " + entity.getName();
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

@@ -2,9 +2,9 @@ package INS;
 
 import Operand.Operand;
 
-public class And extends Bin
+public class Mul extends Bin
 {
-	public And(Operand left, Operand right)
+	public Mul(Operand left, Operand right)
 	{
 		super(left, right);
 	}
@@ -12,7 +12,7 @@ public class And extends Bin
 	@Override
 	public String name()
 	{
-		return "and";
+		return "mul";
 	}
 
 	@Override

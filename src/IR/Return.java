@@ -1,5 +1,7 @@
 package IR;
 
+import Operand.Operand;
+
 public class Return extends IR
 {
 	Expr expr;
@@ -18,5 +20,11 @@ public class Return extends IR
 	public String toString()
 	{
 		return "Return : " + expr;
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

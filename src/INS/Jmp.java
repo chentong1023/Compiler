@@ -2,19 +2,28 @@ package INS;
 
 import Operand.Reference;
 
-public class Comment extends Instruction
+public class Jmp extends Instruction
 {
-	private String comment;
+	private InsLabel dest;
 
-	public Comment(String comment)
+	public Jmp(InsLabel dest)
 	{
-		this.comment = comment;
+		this.dest = dest;
+	}
+
+	public InsLabel getDest()
+	{
+		return dest;
+	}
+
+	public void setDest(InsLabel dest)
+	{
+		this.dest = dest;
 	}
 
 	@Override
 	public void replace_use(Reference from, Reference to)
 	{
-
 
 	}
 
@@ -36,5 +45,9 @@ public class Comment extends Instruction
 		visitor.visit(this);
 	}
 
-	public String toString() {return comment;}
+	@Override
+	public String toString()
+	{
+		return "jmp " + dest;
+	}
 }

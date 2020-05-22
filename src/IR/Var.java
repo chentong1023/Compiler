@@ -1,6 +1,7 @@
 package IR;
 
 import Entity.Entity;
+import Operand.Operand;
 
 public class Var extends Expr
 {
@@ -25,5 +26,11 @@ public class Var extends Expr
 	public String toString()
 	{
 		return entity.getName();
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

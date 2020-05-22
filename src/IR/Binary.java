@@ -1,7 +1,10 @@
 package IR;
 
+import Operand.Operand;
+
 public class Binary extends Expr
 {
+
 	public enum BinaryOp {ADD, SUB, MUL, DIV, MOD, LSHIFT, RSHIFT, LT, GT, LE, GE, EQ, NE, BIT_AND, BIT_XOR, BIT_OR, LOGIC_AND, LOGIC_OR}
 	private Expr left, right;
 	private BinaryOp operator;
@@ -32,5 +35,12 @@ public class Binary extends Expr
 	public String toString()
 	{
 		return "(" + getLeft() + " " + operator + " " + getRight() + ")";
+	}
+
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }

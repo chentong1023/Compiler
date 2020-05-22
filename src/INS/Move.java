@@ -3,8 +3,6 @@ package INS;
 import Operand.Operand;
 import Operand.Reference;
 
-import java.sql.Ref;
-
 public class Move extends Instruction
 {
 	private Operand dest, src;
@@ -20,19 +18,9 @@ public class Move extends Instruction
 		return dest;
 	}
 
-	public void setDest(Operand dest)
-	{
-		this.dest = dest;
-	}
-
 	public Operand getSrc()
 	{
 		return src;
-	}
-
-	public void setSrc(Operand src)
-	{
-		this.src = src;
 	}
 
 	public boolean is_ref_move()
@@ -61,6 +49,13 @@ public class Move extends Instruction
 	}
 
 	@Override
+	public void replace_all(Reference from, Reference to)
+	{
+		src = src.replace(from, to);
+		dest = dest.replace(from, to);
+	}
+
+	@Override
 	public void calc_def_and_use()
 	{
 		if (dest instanceof Reference)
@@ -78,17 +73,14 @@ public class Move extends Instruction
 	}
 
 	@Override
-	public void replace_all(Reference from, Reference to)
+	public void accept(INSVisitor visitor)
 	{
-		src = src.replace(from, to);
-		dest = dest.replace(from, to);
+		visitor.visit(this);
 	}
 
 	@Override
 	public String toString()
 	{
-		return "Mov " + dest +
-				", " + src
-				;
+		return "mov " + dest + ", " + src;
 	}
 }

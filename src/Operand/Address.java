@@ -31,7 +31,7 @@ public class Address extends Operand
 	}
 
 	@Override
-	public Operand replace(Operand from, Operand to)
+	public Address replace(Operand from, Operand to)
 	{
 		if (base != null)
 			base = base.replace(from, to);

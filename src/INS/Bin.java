@@ -17,9 +17,19 @@ abstract public class Bin extends Instruction
 		return left;
 	}
 
+	public void setLeft(Operand left)
+	{
+		this.left = left;
+	}
+
 	public Operand getRight()
 	{
 		return right;
+	}
+
+	public void setRight(Operand right)
+	{
+		this.right = right;
 	}
 
 	@Override
@@ -46,25 +56,15 @@ abstract public class Bin extends Instruction
 	@Override
 	public void calc_def_and_use()
 	{
-		if (left instanceof Reference)
-		{
-			def.addAll(left.get_all_ref());
-		}
+		if (left instanceof Reference) def.addAll(left.get_all_ref());
 		use.addAll(left.get_all_ref());
 		use.addAll(right.get_all_ref());
 		all_ref.addAll(use);
 		all_ref.addAll(def);
 	}
 
-	abstract public String getName();
-//	abstract public void accept()
+	abstract public String name();
+	abstract public void accept(INSVisitor visitor);
 
-	@Override
-	public String toString()
-	{
-		return this.getName() +
-				" " + left +
-				", " + right
-				;
-	}
+	public String toString() {return this.name() + " " + left + ", " + right;}
 }

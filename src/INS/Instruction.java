@@ -49,43 +49,43 @@ abstract public class Instruction
 		return out;
 	}
 
-	public void init_def_and_use()
+	public Set<Reference> getUse()
+	{
+		if (use == null)
+		{
+			init_del_and_use();
+			this.calc_def_and_use();
+		}
+		return use;
+	}
+
+	abstract public void calc_def_and_use();
+
+	private void init_del_and_use()
 	{
 		use = new HashSet<>();
 		def = new HashSet<>();
 		all_ref = new HashSet<>();
 	}
 
-	abstract public void calc_def_and_use();
-
-	public Set<Reference> getUse()
-	{
-		if (use == null)
-		{
-			init_def_and_use();
-			this.calc_def_and_use();
-		}
-		return use;
-	}
-
 	public Set<Reference> getDef()
 	{
 		if (def == null)
 		{
-			init_def_and_use();
+			init_del_and_use();
 			this.calc_def_and_use();
 		}
 		return def;
 	}
 
-	public void setIn(Set<Reference> in)
+	public Set<Reference> getAll_ref()
 	{
-		this.in = in;
-	}
-
-	public void setOut(Set<Reference> out)
-	{
-		this.out = out;
+		if (all_ref == null)
+		{
+			init_del_and_use();
+			this.calc_def_and_use();
+		}
+		return all_ref;
 	}
 
 	public Set<Reference> getLive()
@@ -111,10 +111,20 @@ abstract public class Instruction
 		return live;
 	}
 
+	public void setIn(Set<Reference> in)
+	{
+		this.in = in;
+	}
+
+	public void setOut(Set<Reference> out)
+	{
+		this.out = out;
+	}
+
 	public void setLive(Set<Reference> live)
 	{
 		this.live = live;
 	}
 
-	// abstract public void accept(Translator translator);
+	abstract public void accept(INSVisitor visitor);
 }

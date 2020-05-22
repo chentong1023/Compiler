@@ -1,5 +1,7 @@
 package IR;
 
+import Operand.Operand;
+
 public class Label extends IR
 {
 	private String name;
@@ -28,5 +30,11 @@ public class Label extends IR
 	public String toString()
 	{
 		return "Label " + name;
+	}
+
+	@Override
+	public Operand accept(IRVisitor emitter)
+	{
+		return emitter.visit(this);
 	}
 }
