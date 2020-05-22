@@ -1,0 +1,9 @@
+.idea/
+bin/
+lin/
+out/
+test.mx
+semantic.sh
+build.sh
+codegen.sh
+optmize.sh
