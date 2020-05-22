@@ -1,7 +1,6 @@
 package Entity;
 
 import AST.*;
-import BackEnd.BasicBlock;
 import IR.IR;
 import IR.Label;
 import Operand.Reference;

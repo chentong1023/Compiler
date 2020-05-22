@@ -1,20 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e64ae34f-48ce-4e35-b5b3-731a3dc227a7" name="Default Changelist" comment="" />
+    <list default="true" id="e64ae34f-48ce-4e35-b5b3-731a3dc227a7" name="Default Changelist" comment="IRBuilder is finished.">
+      <change beforePath="$PROJECT_DIR$/src/BackEnd/BasicBlock.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Entity/FunctionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/FunctionEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Add.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/And.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Bin.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Cmp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Comment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Div.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/INSVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/InsCJump.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/InsCall.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/InsLabel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/InsReturn.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Instruction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Jmp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Lea.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Mod.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Move.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Mul.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Neg.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Addr.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Assign.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Binary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/CJump.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Call.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Expr.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/IR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/IRBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/IRVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/InstructionEmitter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/IntConst.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Jump.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Label.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Mem.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Return.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/StrConst.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Unary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/Var.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Address.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Immediate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Operand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Reference.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Register.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="a-new-try" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="ProjectId" id="1ZNnQHx4jGAPcwEjlI3oOGf6inF" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
@@ -70,6 +139,29 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="a-new-try" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="WindowStateProjectService">
     <state x="-1368" y="181" key="#Notifications" timestamp="1585449726807">
       <screen x="-1920" y="0" width="1920" height="1040" />
@@ -83,6 +175,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="682" y="328" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1584756622375" />
+    <state x="-1230" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1590136792599">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1230" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590136792599" />
     <state x="678" y="405" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1585390700797">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -133,6 +229,10 @@
     </state>
     <state x="-1457" y="165" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585449793874" />
     <state x="463" y="165" key="SettingsEditor/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1584688712891" />
+    <state x="-1368" y="252" key="Vcs.Push.Dialog.v2" timestamp="1590136748016">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1368" y="252" key="Vcs.Push.Dialog.v2/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590136748016" />
     <state x="522" y="275" key="com.intellij.ide.util.TipDialog" timestamp="1585444741195">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
