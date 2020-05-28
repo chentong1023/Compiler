@@ -26,6 +26,15 @@ public class InsCJump extends Instruction
 		this.false_label = false_label;
 	}
 
+	public InsCJump(Operand left, Operand right, InsLabel true_label, InsLabel false_label, Type type)
+	{
+		this.true_label = true_label;
+		this.false_label = false_label;
+		this.left = left;
+		this.right = right;
+		this.type = type;
+	}
+
 	public Operand getCond()
 	{
 		return cond;
@@ -89,6 +98,11 @@ public class InsCJump extends Instruction
 	public void setBring_out(Set<Reference> bring_out)
 	{
 		this.bring_out = bring_out;
+	}
+
+	public Type getType()
+	{
+		return type;
 	}
 
 	public String name()

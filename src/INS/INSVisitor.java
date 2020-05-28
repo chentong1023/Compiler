@@ -16,4 +16,12 @@ public interface INSVisitor
 	void visit(Mod ins);
 	void visit(Move ins);
 	void visit(Mul ins);
+	void visit(Sal ins);
+	void visit(Xor ins);
+	void visit(Sar ins);
+	void visit(Sub ins);
+	void visit(Or ins);
+	void visit(Neg ins);
+	void visit(Not ins);
+	void visit(Push ins);
 }

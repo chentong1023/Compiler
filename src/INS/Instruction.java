@@ -53,7 +53,7 @@ abstract public class Instruction
 	{
 		if (use == null)
 		{
-			init_del_and_use();
+			init_def_and_use();
 			this.calc_def_and_use();
 		}
 		return use;
@@ -61,7 +61,7 @@ abstract public class Instruction
 
 	abstract public void calc_def_and_use();
 
-	private void init_del_and_use()
+	public void init_def_and_use()
 	{
 		use = new HashSet<>();
 		def = new HashSet<>();
@@ -72,7 +72,7 @@ abstract public class Instruction
 	{
 		if (def == null)
 		{
-			init_del_and_use();
+			init_def_and_use();
 			this.calc_def_and_use();
 		}
 		return def;
@@ -82,7 +82,7 @@ abstract public class Instruction
 	{
 		if (all_ref == null)
 		{
-			init_del_and_use();
+			init_def_and_use();
 			this.calc_def_and_use();
 		}
 		return all_ref;

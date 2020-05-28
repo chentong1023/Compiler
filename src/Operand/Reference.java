@@ -2,6 +2,7 @@ package Operand;
 
 import Entity.Entity;
 import ExceptionS.InternalErrorS;
+import INS.Move;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -93,6 +94,13 @@ public class Reference extends Operand
 		this.offset = offset;
 	}
 
+	public void setOffset(int offset, Register register)
+	{
+		this.offset = offset;
+		this.register = register;
+		this.type = Type.OFFSET;
+	}
+
 	public void setEntity(Entity entity)
 	{
 		this.entity = entity;
@@ -176,7 +184,7 @@ public class Reference extends Operand
 
 	public Reference alias;
 	public boolean can_be_accumulator() { return type == Type.UNKNOWN && entity == null;}
-/*
+
 	public boolean is_precolored;
 	public Register color;
 	public int ref_times;
@@ -202,5 +210,5 @@ public class Reference extends Operand
 	}
 
 	public void add_ref_time() { ref_times++; }
-	public boolean is_unknown() {return type == Type.UNKNOWN && color == null;}*/
+	public boolean is_unknown() {return type == Type.UNKNOWN && color == null;}
 }

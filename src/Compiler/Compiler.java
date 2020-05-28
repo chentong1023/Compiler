@@ -10,7 +10,7 @@ package Compiler;
 
 import AST.AST;
 import AST.ASTBuilder;
-import IR.IRBuilder;
+import BackEnd.*;
 import Entity.*;
 import ExceptionS.*;
 import FrontEnd.LexerErrorListener;
@@ -104,6 +104,17 @@ public class Compiler {
 
         IRBuilder irBuilder = new IRBuilder(ast);
         irBuilder.generate_IR();
+
+        InstructionEmitter emitter = new InstructionEmitter(irBuilder);
+
+         ControlFlowAnalyzer cfg_builder = new ControlFlowAnalyzer(emitter);
+         cfg_builder.build_cf();
+
+        RegisterConfig registerConfig = new RegisterConfig();
+        Allocator allocator = new Allocator(emitter, registerConfig);
+        allocator.allocate();
+
+        Translator translator = new Translator(emitter, registerConfig);
     }
 
     private static List<Entity> getSystemFunc() {

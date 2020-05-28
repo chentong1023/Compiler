@@ -6,22 +6,15 @@ import java.util.Set;
 public class Register extends Operand
 {
 	private String name;
-	private String low_name;
 	private boolean callee_save;
-	public Register (String name, String low_name)
+	public Register (String name)
 	{
 		this.name = name;
-		this.low_name = low_name;
 	}
 
 	public String getName()
 	{
 		return name;
-	}
-
-	public String getLow_name()
-	{
-		return low_name;
 	}
 
 	public boolean isCallee_save()

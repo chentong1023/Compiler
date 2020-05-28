@@ -3,7 +3,7 @@ package INS;
 import Operand.Operand;
 import Operand.Reference;
 
-public class Neg extends Instruction
+public class Not extends Instruction
 {
 	private Operand operand;
 
@@ -12,7 +12,7 @@ public class Neg extends Instruction
 		return operand;
 	}
 
-	public Neg(Operand operand)
+	public Not(Operand operand)
 	{
 		this.operand = operand;
 	}
@@ -56,6 +56,6 @@ public class Neg extends Instruction
 	@Override
 	public String toString()
 	{
-		return "neg " + operand;
+		return "not " + operand;
 	}
 }

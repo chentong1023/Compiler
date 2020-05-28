@@ -3,48 +3,43 @@ package INS;
 import Operand.Operand;
 import Operand.Reference;
 
-public class Neg extends Instruction
+public class Push extends Instruction
 {
 	private Operand operand;
+
+	public Push(Operand operand)
+	{
+		this.operand = operand;
+	}
 
 	public Operand getOperand()
 	{
 		return operand;
 	}
 
-	public Neg(Operand operand)
-	{
-		this.operand = operand;
-	}
-
 	@Override
 	public void replace_use(Reference from, Reference to)
 	{
-		if (!(operand instanceof Reference))
-			operand = operand.replace(from, to);
+		operand.replace(from, to);
 	}
 
 	@Override
 	public void replace_def(Reference from, Reference to)
 	{
-		if (operand instanceof Reference)
-			operand = operand.replace(from, to);
+		operand.replace(from, to);
 	}
 
 	@Override
 	public void replace_all(Reference from, Reference to)
 	{
-		operand = operand.replace(from, to);
+		operand.replace(from, to);
 	}
 
 	@Override
 	public void calc_def_and_use()
 	{
-		if (operand instanceof Reference)
-			def.addAll(operand.get_all_ref());
 		use.addAll(operand.get_all_ref());
 		all_ref.addAll(use);
-		all_ref.addAll(def);
 	}
 
 	@Override
@@ -56,6 +51,6 @@ public class Neg extends Instruction
 	@Override
 	public String toString()
 	{
-		return "neg " + operand;
+		return "push " + operand;
 	}
 }

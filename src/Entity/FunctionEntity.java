@@ -2,6 +2,8 @@ package Entity;
 
 import AST.*;
 import BackEnd.BasicBlock;
+import INS.InsLabel;
+import INS.Instruction;
 import IR.IR;
 import IR.Label;
 import Operand.Reference;
@@ -223,6 +225,16 @@ public class FunctionEntity extends Entity {
     public List<VariableEntity> all_local_variables() {return scope.all_local_variables();}
 
     private InsLabel begin_label_INS, end_label_INS;
+
+    public InsLabel getBegin_label_INS()
+    {
+        return begin_label_INS;
+    }
+
+    public InsLabel getEnd_label_INS()
+    {
+        return end_label_INS;
+    }
 
     public void set_label_INS(InsLabel begin_label_INS, InsLabel end_label_INS)
     {

@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e64ae34f-48ce-4e35-b5b3-731a3dc227a7" name="Default Changelist" comment="" />
+    <list default="true" id="e64ae34f-48ce-4e35-b5b3-731a3dc227a7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/antlr_4_8_complete.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BackEnd/Allocator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BackEnd/ControlFlowAnalyzer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BackEnd/InstructionEmitter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BackEnd/RegisterConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BackEnd/Translator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Not.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Or.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Push.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Sal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Sar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Sub.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/INS/Xor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Compiler/Compiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler/Compiler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Compiler/Defines.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler/Defines.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Entity/FunctionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/FunctionEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/INSVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/INS/INSVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/InsCJump.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/INS/InsCJump.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Instruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/INS/Instruction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/INS/Neg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/INS/Neg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/IRBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BackEnd/IRBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IR/InstructionEmitter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Reference.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Operand/Reference.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Operand/Register.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Operand/Register.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -14,7 +49,6 @@
   <component name="ProjectId" id="1ZNnQHx4jGAPcwEjlI3oOGf6inF" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
@@ -23,9 +57,10 @@
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="compiler" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/Parser" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/antlr-4.8-complete.jar!/" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -38,10 +73,13 @@
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\大二下\编译器\Compiler\src" />
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="BackEnd" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\大二下\编译器\Compiler\src" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\大二下\编译器\Compiler\src" />
     </key>
   </component>
@@ -64,11 +102,16 @@
       <workItem from="1585291353697" duration="6497000" />
       <workItem from="1585364823338" duration="13466000" />
       <workItem from="1585444741631" duration="7403000" />
+      <workItem from="1590297734702" duration="12368000" />
+      <workItem from="1590402450293" duration="7112000" />
+      <workItem from="1590456894702" duration="10869000" />
+      <workItem from="1590486387395" duration="6388000" />
+      <workItem from="1590545094893" duration="24868000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1368" y="181" key="#Notifications" timestamp="1585449726807">
@@ -83,14 +126,27 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="682" y="328" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1584756622375" />
+    <state x="-1155" y="225" key="#com.intellij.ide.util.MemberChooser" timestamp="1590585549653">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1155" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590585549653" />
+    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1590471795711" />
+    <state x="-1230" y="298" key="#com.intellij.ide.util.PackageChooserDialog" timestamp="1590328912692">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1230" y="298" key="#com.intellij.ide.util.PackageChooserDialog/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590328912692" />
+    <state x="-1184" y="412" width="447" height="222" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1590328913510">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1184" y="412" width="447" height="222" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590328913510" />
     <state x="678" y="405" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1585390700797">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="678" y="405" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585390700797" />
-    <state x="-1180" y="278" key="FileChooserDialogImpl" timestamp="1585454073413">
+    <state x="-1180" y="278" key="FileChooserDialogImpl" timestamp="1590328857291">
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="-1180" y="278" key="FileChooserDialogImpl/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585454073413" />
+    <state x="-1180" y="278" key="FileChooserDialogImpl/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590328857291" />
     <state x="740" y="278" key="FileChooserDialogImpl/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1584688703056" />
     <state x="-1147" y="418" key="Github.CreateGistDialog" timestamp="1585449712960">
       <screen x="-1920" y="0" width="1920" height="1040" />
@@ -128,10 +184,10 @@
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="348" key="GridCell.Tab.1.right/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585454436238" />
-    <state x="-1457" y="165" key="SettingsEditor" timestamp="1585449793874">
+    <state x="-1457" y="165" key="SettingsEditor" timestamp="1590328861454">
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="-1457" y="165" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585449793874" />
+    <state x="-1457" y="165" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590328861454" />
     <state x="463" y="165" key="SettingsEditor/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1584688712891" />
     <state x="522" y="275" key="com.intellij.ide.util.TipDialog" timestamp="1585444741195">
       <screen x="0" y="0" width="1536" height="824" />
@@ -143,13 +199,18 @@
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
     <state x="-1166" y="438" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585449971689" />
+    <state x="-1732" y="275" key="refactoring.ChangeSignatureDialog" timestamp="1590547274548">
+      <screen x="-1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="-1732" y="275" key="refactoring.ChangeSignatureDialog/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590547274548" />
     <state x="-1304" y="240" key="run.anything.popup" timestamp="1585137404287">
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
     <state x="-1304" y="240" key="run.anything.popup/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585137404287" />
-    <state x="-1297" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1585447176633">
-      <screen x="-1920" y="0" width="1920" height="1040" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1590471852135">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1297" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1585447176633" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1590471852135" />
   </component>
 </project>
