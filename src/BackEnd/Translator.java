@@ -6,6 +6,7 @@ import Operand.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import static Compiler.Defines.FRAME_ALIGNMENT_SIZE;
 import static Compiler.Defines.REG_SIZE;
@@ -60,6 +61,10 @@ public class Translator implements INSVisitor
 	{
 
 	} // save
+	private void add(String op, Operand l)
+	{
+		asm.add("\t" + op + " " + l.to_NASM());
+	}
 
 	public List<String> translate()
 	{
@@ -143,25 +148,76 @@ public class Translator implements INSVisitor
 	private void translate_function(FunctionEntity entity)
 	{
 		add_label(entity.getAsm_name());
+		int start_pos = asm.size();
+		for (BasicBlock basicBlock : entity.getBasicBlocks())
+		{
+			for (Instruction ins : basicBlock.getIns())
+				ins.accept(this);
+			if (basicBlock.getLabel() == entity.getEnd_label_INS())
+			{
+				if (entity.getCalls().size() != 0 && entity.getFrame_size() != 0)
+					add_bin("add", rsp, new Immediate((entity.getFrame_size())));
+				ListIterator iter = entity.getReg_used().listIterator(entity.getReg_used().size());
+				while (iter.hasPrevious())
+				{
+					Register reg = (Register) iter.previous();
+					if (reg.isCallee_save())
+						add("pop", reg);
+				}
+				add("ret");
+			}
+		}
+
+		List<String> backup = asm, prologue;
+		asm = new LinkedList<>();
+		for (Register register : entity.getReg_used())
+			if (register.isCallee_save())
+				add("push", register);
+		if (entity.getReg_used().contains(rfp))
+			add("mv", rfp, rsp);
+		if (entity.getCalls().size() != 0 && entity.getFrame_size() != 0)
+			add("sub", rsp, new Immediate(entity.getFrame_size()));
+		List<ParameterEntity> params = entity.getParameterEntityList();
+		for (ParameterEntity param : params)
+		{
+			if (!param.getReference().equals(param.getSource()))
+				add("mv",param.getReference(),param.getSource());
+		}
+		add("");
+		prologue = asm;
+		asm = backup;
+		asm.addAll(start_pos, prologue);
 	}
 
 
 	@Override
 	public void visit(Add ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(And ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Cmp ins)
 	{
+		Operand left, right;
+		left = ins.getLeft();
+		right = ins.getRight();
+		visit_cmp(left, right);
 
+		String cmpname = "";
+		switch (ins.getOperator())
+		{
+			case NE:cmpname = "sne"; break;
+			case EQ:cmpname = "se"; break;
+			case LE:cmpname = "sle"; break;
+
+		}
 	}
 
 	@Override

@@ -16,6 +16,11 @@ public class Cmp extends Bin
 		this.operator = operator;
 	}
 
+	public Operator getOperator()
+	{
+		return operator;
+	}
+
 	@Override
 	public String name()
 	{
