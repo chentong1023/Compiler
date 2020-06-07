@@ -109,27 +109,27 @@ public class InsCJump extends Instruction
 	{
 		switch (type)
 		{
-			case EQ: return "je";
-			case NE: return "jne";
-			case GT: return "jg";
-			case GE: return "jge";
-			case LT: return "jl";
-			case LE: return "jle";
+			case EQ: return "beq";
+			case NE: return "bne";
+			case GT: return "bgt";
+			case GE: return "bge";
+			case LT: return "blt";
+			case LE: return "ble";
 			default:
 				throw new InternalErrorS("Invalid compare operator");
 		}
 	}
 
-	public String get_not_name(String raw)
+	static public String get_not_name(String raw)
 	{
 		switch (raw)
 		{
-			case "je":  return "jne";
-			case "jne": return "je";
-			case "jg":  return "jle";
-			case "jge": return "jl";
-			case "jl":  return "jge";
-			case "jle": return "jg";
+			case "beq":  return "bne";
+			case "bne": return "beq";
+			case "bgt":  return "ble";
+			case "bge": return "blt";
+			case "blt":  return "bge";
+			case "ble": return "bgt";
 			default:
 				throw new InternalErrorS("invalid compare operator");
 		}
@@ -139,12 +139,12 @@ public class InsCJump extends Instruction
 	{
 		switch (raw)
 		{
-			case "je" : return "je";
-			case "jne": return "jne";
-			case "jg":  return "jlt";
-			case "jge": return "jle";
-			case "jl":  return "jgt";
-			case "jle": return "jge";
+			case "beq" : return "beq";
+			case "bne": return "bne";
+			case "bgt":  return "blt";
+			case "bge": return "ble";
+			case "blt":  return "bgt";
+			case "ble": return "bge";
 			default:
 				throw new InternalError("invalid compare operator");
 		}

@@ -60,8 +60,6 @@ public class Register extends Operand
 	@Override
 	public String toString()
 	{
-		return "Register{" +
-				"name='" + name + '\'' +
-				'}';
+		return name;
 	}
 }

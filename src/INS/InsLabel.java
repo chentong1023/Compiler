@@ -75,6 +75,6 @@ public class InsLabel extends Instruction
 	@Override
 	public String toString()
 	{
-		return name;
+		return name + ":";
 	}
 }

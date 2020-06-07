@@ -94,7 +94,6 @@ public class Compiler {
 
         parser.removeErrorListeners();
         parser.addErrorListener(new ParserErrorListener());
-
         ASTBuilder builder = new ASTBuilder(parser.prog());
         AST ast = builder.getAst();
         ast.load_library(getSystemFunc());
@@ -106,6 +105,8 @@ public class Compiler {
         irBuilder.generate_IR();
 
         InstructionEmitter emitter = new InstructionEmitter(irBuilder);
+        emitter.emit();
+        emitter.print_INS();
 
          ControlFlowAnalyzer cfg_builder = new ControlFlowAnalyzer(emitter);
          cfg_builder.build_cf();
@@ -115,6 +116,8 @@ public class Compiler {
         allocator.allocate();
 
         Translator translator = new Translator(emitter, registerConfig);
+        List<String> asm = translator.translate();
+        asm.forEach(line -> os.println(line));
     }
 
     private static List<Entity> getSystemFunc() {
@@ -124,9 +127,9 @@ public class Compiler {
         func.add(new LibFunction(stringType, "getString", null).getEntity());
         func.add(new LibFunction(integerType, "getInt", null).getEntity());
         func.add(new LibFunction(stringType, "toString", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType,   LIB_PREFIX + "printInt", LIB_PREFIX + "printInt", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType,  LIB_PREFIX + "printlnInt", LIB_PREFIX + "printlnInt", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType,  LIB_PREFIX + "malloc", LIB_PREFIX + "malloc",new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,   "printInt", LIB_PREFIX + "printInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,  "printlnInt", LIB_PREFIX + "printlnInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,  "malloc", LIB_PREFIX + "malloc",new Type[]{integerType}).getEntity());
         func.add(new VariableEntity("null", null, nullType, null));
         return func;
     }

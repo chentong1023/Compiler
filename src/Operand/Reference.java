@@ -129,15 +129,28 @@ public class Reference extends Operand
 	@Override
 	public String toString()
 	{
-		return "Reference{" +
-				"name='" + name + '\'' +
-				'}';
+		return name;
 	}
 
 	@Override
 	public String to_NASM()
 	{
-		return super.to_NASM();
+		try {
+			switch (type) {
+				case GLOBAL: return "." + name;
+				case OFFSET: return offset + "("+ register.getName() +")";
+				case REG:    return register.getName();
+				case SPECIAL:return name;
+				case UNUSED:
+				case UNKNOWN:
+				default:
+					throw new Exception();
+					//throw new InternalError("Unallocated reference " + this);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

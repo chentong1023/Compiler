@@ -44,7 +44,7 @@ public class Allocator
 	private Set<Move> constrained_moves;
 	private Set<Move> coalesced_moves;
 
-	private Register rfp, rsp, ra0, rt0, rt1, rt2;
+	private Register rfp, rsp, ra0, rt0, rt1, rt2, rra, rgp, rtp;
 	private Reference rra0;
 
 
@@ -53,6 +53,9 @@ public class Allocator
 	public Allocator(InstructionEmitter emitter, RegisterConfig registerConfig)
 	{
 		functionEntityList = emitter.getFunctionEntities();
+		rgp = registerConfig.getRegisters().get(3);
+		rtp = registerConfig.getRegisters().get(4);
+		rra = registerConfig.getRegisters().get(1);
 		rfp = registerConfig.getRegisters().get(8);
 		rsp = registerConfig.getRegisters().get(2);
 		ra0 = registerConfig.getRegisters().get(10);
@@ -65,17 +68,21 @@ public class Allocator
 		registerConfig.getPara_registers().forEach(register -> {para_register_ref.add(new Reference(register));});
 		precolored = new LinkedHashSet<>();
 		precolored.addAll(para_register_ref);
+		precolored.add(rra0);
 		precolored.add(new Reference(rt0));
 		precolored.add(new Reference(rt1));
 		precolored.add(new Reference(rt2));
+		precolored.add(new Reference(rra));
+		precolored.add(new Reference(rgp));
+		precolored.add(new Reference(rtp));
+		precolored.add(new Reference(rfp));
 		precolored.forEach(reference -> {reference.is_precolored = true; reference.color = reference.getRegister();});
 
 		caller_save_reg_ref = new HashSet<>();
 
 
-		for (int i = 1; i < 32; ++i)
-			if (i != 2 && i != 3 && i != 4 && i != 8)
-				colors.add(registerConfig.getRegisters().get(i));
+		for (int i = 9; i < 32; ++i)
+			colors.add(registerConfig.getRegisters().get(i));
 	}
 
 	public void allocate()
@@ -373,13 +380,15 @@ public class Allocator
 					Set<Reference> para_reg_used = new HashSet<>();
 					InsCall ins = (InsCall) raw;
 					int i = 0, push_counter = 0;
+					LinkedList<Operand> pushList = new LinkedList<>();
 					for (Operand operand : ins.getOperands())
 					{
 						if (i < para_register_ref.size())
 						{
 							para_reg_used.add(para_register_ref.get(i));
 							newIns.add(new Move(para_register_ref.get(i), operand));
-						} else
+						}
+						else
 						{
 							if (operand instanceof Immediate)
 							{
@@ -387,10 +396,15 @@ public class Allocator
 								newIns.add(new Move(tmp, operand));
 								operand = tmp;
 							}
-							newIns.add(new Push(operand));
-							push_counter++;
+							pushList.add(operand);
 						}
 						i++;
+					}
+					newIns.add(new Sub(rsp, new Immediate(pushList.size() * REG_SIZE)));
+					for (Operand operand : pushList)
+					{
+						newIns.add(new Move(new Reference(push_counter * REG_SIZE, rsp), operand));
+						push_counter++;
 					}
 					InsCall nw_ins_call = new InsCall(ins.getEntity(), new LinkedList<>());
 					nw_ins_call.setCallorsave(caller_save_reg_ref);

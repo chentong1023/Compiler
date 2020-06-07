@@ -1,15 +1,18 @@
 package BackEnd;
 
 import Entity.*;
+import ExceptionS.InternalErrorS;
 import INS.*;
 import Operand.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import static Compiler.Defines.FRAME_ALIGNMENT_SIZE;
-import static Compiler.Defines.REG_SIZE;
+import static Compiler.Defines.*;
 
 public class Translator implements INSVisitor
 {
@@ -20,7 +23,7 @@ public class Translator implements INSVisitor
 	private List<Register> para_register;
 	private List<String> asm = new LinkedList<>();
 
-	private Register rfp, rsp, rt0;
+	private Register rfp, rsp, rt0, rt1, rt2, ra0;
 
 	public Translator(InstructionEmitter emitter, RegisterConfig registerConfig)
 	{
@@ -33,6 +36,9 @@ public class Translator implements INSVisitor
 		rfp = registerConfig.getRegisters().get(8);
 		rsp = registerConfig.getRegisters().get(2);
 		rt0 = registerConfig.getRegisters().get(5);
+		rt1 = registerConfig.getRegisters().get(6);
+		rt2 = registerConfig.getRegisters().get(7);
+		ra0 = registerConfig.getRegisters().get(10);
 	}
 
 	private void add(String ins) {asm.add("\t" + ins);}
@@ -42,25 +48,116 @@ public class Translator implements INSVisitor
 	}
 	private void add(String op, Operand l, Operand r)
 	{
-		if (!(op.equals("mv") && l.to_NASM().equals(r.to_NASM())))
-			asm.add("\t" + op + " " + l.to_NASM() + ", " + r.to_NASM());
+		if (!(op.equals("mv")))
+			asm.add("\t" + op + "\t" + l.to_NASM() + "\t" + l.to_NASM() + "\t" + r.to_NASM());
+		else if (l.to_NASM() != r.to_NASM())
+			asm.add("\t" + op + "\t" + l + "\t" + r);
 	}
-	private void add_move(Register reg, Operand operand)
+	private void add_move(Operand dest, Operand src)
 	{
-		if (operand.is_register())
-			add("mv", reg, operand);
-		else if (operand instanceof Address)
+		if (dest.is_register() && src.is_register())
 		{
+			if (dest.to_NASM() != src.to_NASM())
+				add("mv\t" + dest.to_NASM() + "\t" + src.to_NASM());
+		}
+		else if (dest.is_register())
+		{
+			if (src instanceof Address)
+			{
+				simplify_address(((Address) src));
+				add("lw\t" + dest + ",\t" + ((Address) src).getAdd() + "(" + rt0 + ")");
+			}
+			else if (src instanceof Immediate)
+			{
+				add("li\t" + dest.to_NASM() + "\t" + src.to_NASM());
+			}
+			else if (!(src instanceof Reference))
+			{
+				throw new InternalErrorS("what the fuck?");
+			}
+			else if (((Reference) src).getType() == Reference.Type.GLOBAL)
+			{
+				add("la\t" + rt0 + ",\t" + src.to_NASM());
+				add("lw\t" + dest.to_NASM() + ",\t" + "0(" + rt0 + ")");
+			}
+			else if (((Reference) src).getType() == Reference.Type.OFFSET)
+			{
+				add("lw\t" + dest.to_NASM() + ",\t" + ((Reference) src).getOffset() + "(" + ((Reference) src).getRegister() + ")");
+			}
+			else
+			{
+				throw new InternalErrorS("what the fuck?");
+			}
+		} // load
+		else if (src.is_register())
+		{
+			if (dest instanceof Address)
+			{
+				simplify_address(((Address) dest));
+				add("sw\t" + src + ",\t" + ((Address) dest).getAdd() + "(" + rt0 + ")");
+			}
+			else if (!(dest instanceof Reference))
+			{
+				throw new InternalErrorS("what the fuck?");
+			}
+			else if (((Reference) dest).getType() == Reference.Type.GLOBAL)
+			{
+				add("la\t" + rt0 + ",\t" + dest.to_NASM());
+				add("sw\t" + src.to_NASM() + ",\t0(" + rt0 + ")");
+			}
+			else if (((Reference) dest).getType() == Reference.Type.OFFSET)
+			{
+				add("sw\t" + src.to_NASM() + ",\t" + ((Reference) dest).getOffset() + "(" + ((Reference) dest).getRegister() + ")");
+			}
+			else
+			{
+
+			}
+		}//save
+	}
+	private void add_bin(String name, Operand left, Operand right)
+	{
+		Operand rs1 = left, rs2 = right;
+		if (!left.is_register())
+		{
+			rs1 = rt0;
+			add_move(rs1, left);
+		}
+		if (!right.is_register())
+		{
+			rs2 = rt1;
+			add_move(rs2, right);
+		}
+		add(name, rs1, rs2);
+		if (left != rs1)
+			add_move(left, rs1);
+	}
+	private void add_push(Operand operand)
+	{
+		if (!operand.is_register())
+			throw new InternalErrorS("push is not register.");
+		add("push\t" + operand);
+	}
+	private void add_pop(Operand operand)
+	{
+		if (!operand.is_register())
+			throw new InternalErrorS("pop is not register.");
+		add("pop\t" + operand);
+	}
+	private void add_unary(String name, Operand operand)
+	{
+		Operand dest = operand;
+		if (!operand.is_register())
+		{
+			add_move(rt0, operand);
+			add(name + " " + rt0 + " " + rt0);
+			add_move(operand, rt0);
 		}
 		else
 		{
-			
+			add(name + " " + operand + " " + operand);
 		}
-	} // load
-	private void add_move(Operand operand, Register reg)
-	{
-
-	} // save
+	}
 	private void add(String op, Operand l)
 	{
 		asm.add("\t" + op + " " + l.to_NASM());
@@ -157,38 +254,49 @@ public class Translator implements INSVisitor
 			{
 				if (entity.getCalls().size() != 0 && entity.getFrame_size() != 0)
 					add_bin("add", rsp, new Immediate((entity.getFrame_size())));
-				ListIterator iter = entity.getReg_used().listIterator(entity.getReg_used().size());
-				while (iter.hasPrevious())
-				{
-					Register reg = (Register) iter.previous();
-					if (reg.isCallee_save())
-						add("pop", reg);
-				}
-				add("ret");
 			}
 		}
 
 		List<String> backup = asm, prologue;
 		asm = new LinkedList<>();
+
+		LinkedList<Register> callee = new LinkedList<>();
 		for (Register register : entity.getReg_used())
 			if (register.isCallee_save())
-				add("push", register);
+				callee.add(register);
+		add_bin("sub", rsp, new Immediate(callee.size() * REG_SIZE));
+		int push_cnter = 0;
+		for (Register register : callee)
+		{
+			add_move(new Reference(push_cnter * REG_SIZE, rsp), register);
+			push_cnter++;
+		}
+
 		if (entity.getReg_used().contains(rfp))
 			add("mv", rfp, rsp);
 		if (entity.getCalls().size() != 0 && entity.getFrame_size() != 0)
-			add("sub", rsp, new Immediate(entity.getFrame_size()));
+			add_bin("sub", rsp, new Immediate(entity.getFrame_size()));
 		List<ParameterEntity> params = entity.getParameterEntityList();
 		for (ParameterEntity param : params)
 		{
 			if (!param.getReference().equals(param.getSource()))
-				add("mv",param.getReference(),param.getSource());
+				add_move(param.getReference(),param.getSource());
 		}
 		add("");
 		prologue = asm;
 		asm = backup;
 		asm.addAll(start_pos, prologue);
+		add_bin("add", rsp, new Immediate(callee.size() * REG_SIZE));
+		add("ret");
 	}
 
+	private void visit_bin(Bin ins)
+	{
+		Operand left = ins.getLeft(), right = ins.getRight();
+		String name = ins.name();
+
+		add_bin(name, left, right);
+	}
 
 	@Override
 	public void visit(Add ins)
@@ -208,7 +316,6 @@ public class Translator implements INSVisitor
 		Operand left, right;
 		left = ins.getLeft();
 		right = ins.getRight();
-		visit_cmp(left, right);
 
 		String cmpname = "";
 		switch (ins.getOperator())
@@ -216,121 +323,238 @@ public class Translator implements INSVisitor
 			case NE:cmpname = "sne"; break;
 			case EQ:cmpname = "se"; break;
 			case LE:cmpname = "sle"; break;
-
+			case GE:cmpname = "sge"; break;
+			case GT:cmpname = "sgt"; break;
+			case LT:cmpname = "slt"; break;
 		}
+		add_bin(cmpname, left, right);
 	}
 
 	@Override
 	public void visit(Comment ins)
 	{
-
+		add("#"+ins);
 	}
 
 	@Override
 	public void visit(Div ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(InsCall ins)
 	{
+		List<Operand> operands = ins.getOperands();
 
+		int push_cnter = 0;
+		int offset = (operands.size() - para_register.size()) * REG_SIZE;
+		if (operands.size() > para_register.size())
+			add_bin("sub", rsp, new Immediate((operands.size() - para_register.size()) * REG_SIZE));
+		for (int i = 0; i < operands.size(); ++i)
+		{
+			if (i < para_register.size())
+				add_move(para_register.get(i), operands.get(i));
+			else
+			{
+				if (operands.get(i).is_register())
+					add_move(operands.get(i), new Reference(push_cnter * REG_SIZE, rsp));
+				else
+				{
+					add_move(rt0, operands.get(i));
+					add_move(new Reference(push_cnter * REG_SIZE, rsp), rt0);
+				}
+				push_cnter++;
+			}
+		}
+		add("call\t" + ins.getEntity().getAsm_name());
+		if (operands.size() > para_register.size())
+			add_bin("add", rsp, new Immediate((operands.size() - para_register.size()) * REG_SIZE));
+		if (ins.getRet() != null)
+			add_move(ins.getRet(), ra0);
 	}
 
 	@Override
 	public void visit(InsLabel ins)
 	{
-
+		add_label(ins.getName());
 	}
 
 	@Override
 	public void visit(InsCJump ins)
 	{
+		if (ins.getType() == InsCJump.Type.BOOL)
+		{
+			if (ins.getCond() instanceof Immediate)
+			{
+				if (((Immediate) ins.getCond()).getValue() != 0)
+					add("j" + ins.getTrue_label().getName());
+				else
+					add("j" + ins.getFalse_label().getName());
+			}
+			else
+			{
+				add_move(rt0, ins.getCond());
 
+				if (ins.getFall_through() == ins.getTrue_label())
+					add("beqz " + rt0 + ins.getFalse_label());
+				else if (ins.getFall_through() == ins.getFalse_label())
+					add("bnez " + rt0 + ins.getTrue_label());
+				else
+				{
+					add("bnez " + rt0 + ins.getTrue_label());
+					add("beqz " + rt0 + ins.getFalse_label());
+				}
+			}
+		}
+		else
+		{
+			String name = ins.name();
+			Operand left = ins.getLeft(), right = ins.getRight();
+
+			if (left instanceof Immediate)
+			{
+				Operand t = left; left = right; right = t;
+				name = InsCJump.get_reflect(name);
+			}
+
+			if (ins.getFall_through() == ins.getTrue_label())
+			{
+				name = InsCJump.get_not_name(name);
+				add(name + " " + rt0 + " " + ins.getFalse_label().getName());
+			}
+			else if (ins.getFall_through() == ins.getFalse_label())
+				add(name + " " + rt0 + " " + ins.getTrue_label().getName());
+			else
+			{
+				add(name + " " + rt0 + " " + ins.getTrue_label().getName());
+				add(InsCJump.get_not_name(name) + " " + rt0 + " " + ins.getFalse_label());
+			}
+		}
 	}
 
 	@Override
 	public void visit(InsReturn ins)
 	{
-
+		if (ins.getRet() != null)
+			add_move(ra0, ins.getRet());
 	}
 
 	@Override
 	public void visit(Jmp ins)
 	{
-
+		add("j " + ins.getDest());
 	}
 
 	@Override
 	public void visit(Lea ins)
 	{
-
+		if (!Enable_Global_Register_Allocation)
+			simplify_address(ins.getAddr());
+		ins.getAddr().setShow_size(false);
+		add_move(ins.getDest(), rt0);
 	}
 
 	@Override
 	public void visit(Mod ins)
 	{
+		visit_bin(ins);
+	}
 
+	private void simplify_address(Address addr)
+	{
+		if (addr.getIndex() == null)
+		{
+			add_move(rt0, addr.getBase());
+			return ;
+		}
+		add_move(rt1, addr.getIndex());
+		add_move(rt0, addr.getBase());
+		add_bin("mul", rt1, new Immediate(addr.getMul()));
+		add_bin("add", rt0, rt1);
 	}
 
 	@Override
 	public void visit(Move ins)
 	{
+		boolean isAddrLeft = ins.getDest().is_address();
+		boolean isAddrRight = ins.getSrc().is_address();
 
+		if (Enable_Global_Register_Allocation)
+			add_move(ins.getDest(), ins.getSrc());
+		else
+		{
+			if (isAddrLeft && isAddrRight) throw new InternalErrorS("what the fuck?");
+			else
+				add_move(ins.getDest(), ins.getSrc());
+		}
 	}
 
 	@Override
 	public void visit(Mul ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Sal ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Xor ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Sar ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Sub ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Or ins)
 	{
-
+		visit_bin(ins);
 	}
 
 	@Override
 	public void visit(Neg ins)
 	{
-
+		add_unary("neg ", ins.getOperand());
 	}
 
 	@Override
 	public void visit(Not ins)
 	{
-
+		add_unary("not ", ins.getOperand());
 	}
 
 	@Override
 	public void visit(Push ins)
 	{
+		add_push(ins.getOperand());
+	}
 
+	private void paste_lib_function()
+	{
+		File f = new File("lib/lib.s");
+		try {
+			BufferedReader fin = new BufferedReader(new FileReader(f));
+			String line;
+			while ((line = fin.readLine()) != null)
+				asm.add(line);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

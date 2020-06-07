@@ -11,6 +11,7 @@ public class Address extends Operand
 	private int mul = 1, add = 0;
 	private boolean show_size = true;
 	private Operand base_NASM, index_NASM;
+	private Operand result;
 
 	public Address(Operand base)
 	{
@@ -116,6 +117,16 @@ public class Address extends Operand
 		this.index_NASM = index_NASM;
 	}
 
+	public Operand getResult()
+	{
+		return result;
+	}
+
+	public void setResult(Operand result)
+	{
+		this.result = result;
+	}
+
 	public boolean base_only() { return base != null && index != null && mul == 1 && add == 0;}
 
 	@Override
@@ -138,23 +149,7 @@ public class Address extends Operand
 	@Override
 	public String to_NASM()
 	{
-		String ret = show_size ? "qword" + "[" : "[";
-		String gap = "";
-		if (base != null)
-		{
-			ret += gap + base_NASM.to_NASM();
-			gap = " + ";
-		}
-		if (index != null)
-		{
-			ret += gap + index_NASM.to_NASM();
-			gap = " + ";
-			if (mul != 1)
-				ret += " * " + mul;
-		}
-		if (add != 0)
-			ret += gap + add;
-		return ret + "]";
+		return add + "(" + result + ")";
 	}
 
 	@Override

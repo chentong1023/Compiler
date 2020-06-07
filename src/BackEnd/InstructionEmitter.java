@@ -6,6 +6,7 @@ import Entity.*;
 import ExceptionS.InternalErrorS;
 import INS.*;
 import IR.*;
+import IR.Binary.BinaryOp.*;
 import Operand.*;
 import Utils.AddressTuple;
 import Utils.Triple;
@@ -52,6 +53,7 @@ public class InstructionEmitter implements IRVisitor
 		for (FunctionEntity functionEntity : functionEntities)
 		{
 			currentFunction = functionEntity;
+			tmp_stack = new ArrayList<Reference>();
 			functionEntity.setIns(emit_function(functionEntity));
 			functionEntity.setTmp_stack(tmp_stack);
 		}
@@ -75,7 +77,7 @@ public class InstructionEmitter implements IRVisitor
 			{
 				if (global instanceof VariableEntity)
 				{
-					VariableEntity local = new VariableEntity("g_" + global.getName(), global.getLocation(), global.getType(), null);
+					VariableEntity local = new VariableEntity(global.getName(), global.getLocation(), global.getType(), null);
 					global_local_map.put(global, local);
 					currentFunction.getScope().insert(local);
 				}
@@ -158,7 +160,7 @@ public class InstructionEmitter implements IRVisitor
 		else
 		{
 			if (tmp_top >= tmp_stack.size())
-				tmp_stack.add(new Reference("ref_" + tmp_counter, Reference.Type.UNKNOWN));
+				tmp_stack.add(new Reference("ref_" + tmp_counter++, Reference.Type.UNKNOWN));
 			return tmp_stack.get(tmp_top++);
 		}
 	}
@@ -337,7 +339,7 @@ public class InstructionEmitter implements IRVisitor
 		return null;
 	}
 
-	private Operand add_binary(IR.Binary.BinaryOp op, Operand left, Operand right)
+	private Operand add_binary(Binary.BinaryOp op, Operand left, Operand right)
 	{
 		left = get_lvalue(left);
 		switch (op)
@@ -385,7 +387,7 @@ public class InstructionEmitter implements IRVisitor
 		return -1;
 	}
 
-	private boolean is_commutative(IR.Binary.BinaryOp op)
+	private boolean is_commutative(Binary.BinaryOp op)
 	{
 		switch (op)
 		{
@@ -403,7 +405,7 @@ public class InstructionEmitter implements IRVisitor
 	{
 		Operand ret;
 		Expr left = ir.getLeft(), right = ir.getRight();
-		IR.Binary.BinaryOp op = ir.getOperator();
+		Binary.BinaryOp op = ir.getOperator();
 
 		if (is_commutative(op) && left instanceof IntConst)
 		{
@@ -454,7 +456,7 @@ public class InstructionEmitter implements IRVisitor
 		return ret;
 	}
 
-	private boolean is_compare_OP(IR.Binary.BinaryOp op)
+	private boolean is_compare_OP(Binary.BinaryOp op)
 	{
 		switch(op)
 		{
@@ -562,7 +564,7 @@ public class InstructionEmitter implements IRVisitor
 		{
 			Operand expr = visit_expr(ir.getExpr());
 			expr = eliminate_address(expr);
-			return new Address(expr);
+			return expr;
 		}
 	}
 
@@ -627,5 +629,10 @@ public class InstructionEmitter implements IRVisitor
 	public List<FunctionEntity> getFunctionEntities()
 	{
 		return functionEntities;
+	}
+
+	public void print_INS()
+	{
+		ins.forEach(x -> System.err.println(x));
 	}
 }

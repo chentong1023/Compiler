@@ -2,19 +2,11 @@ package INS;
 
 import Operand.Reference;
 
-public class Comment extends Instruction
+public class Ld extends Instruction
 {
-	private String comment;
-
-	public Comment(String comment)
-	{
-		this.comment = comment;
-	}
-
 	@Override
 	public void replace_use(Reference from, Reference to)
 	{
-
 
 	}
 
@@ -33,8 +25,6 @@ public class Comment extends Instruction
 	@Override
 	public void accept(INSVisitor visitor)
 	{
-		visitor.visit(this);
-	}
 
-	public String toString() {return "#" + comment;}
+	}
 }

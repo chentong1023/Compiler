@@ -27,6 +27,7 @@ public class BasicBlock
 	public BasicBlock(InsLabel label)
 	{
 		this.label = label;
+		label.setBasicBlock(this);
 	}
 
 	public List<BasicBlock> getPredecessor()

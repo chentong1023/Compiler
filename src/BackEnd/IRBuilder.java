@@ -7,16 +7,14 @@ import FrontEnd.ASTVisitor;
 import IR.*;
 import IR.Binary.BinaryOp;
 import Type.*;
-import javafx.util.Pair;
+import Utils.Pair;
 
-import java.lang.reflect.GenericArrayType;
 import java.util.*;
 
 import static Compiler.Defines.*;
 import static IR.Binary.BinaryOp.ADD;
 import static IR.Binary.BinaryOp.SUB;
 import static Type.StringType.*;
-import static Utils.LibFunction.LIB_PREFIX;
 
 public class IRBuilder implements ASTVisitor<Void, Expr>
 {
@@ -51,11 +49,11 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	public IRBuilder(AST ast)
 	{
 		this.ast = ast;
-		malloc_function = (FunctionEntity) ast.getScope().lookup_current_level(LIB_PREFIX + "malloc");
-		printint_function = (FunctionEntity) ast.getScope().lookup_current_level(LIB_PREFIX + "printInt");
+		malloc_function = (FunctionEntity) ast.getScope().lookup_current_level("malloc");
+		printint_function = (FunctionEntity) ast.getScope().lookup_current_level( "printInt");
 		print_function = (FunctionEntity) ast.getScope().lookup_current_level("print");
 		println_function = (FunctionEntity) ast.getScope().lookup_current_level("println");
-		printlnint_function = (FunctionEntity) ast.getScope().lookup_current_level(LIB_PREFIX + "printlnInt");
+		printlnint_function = (FunctionEntity) ast.getScope().lookup_current_level("printlnInt");
 		scopeStack.push(ast.getScope());
 	}
 
@@ -810,13 +808,13 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		{
 			Entity entity = ((Var) lhs).getEntity();
 			Pair<Boolean, Integer> ret = expr_hash(node.getRhs());
-			if (ret.getKey() && !(node.getRhs() instanceof IntegerLiteralNode))
+			if (ret.first && !(node.getRhs() instanceof IntegerLiteralNode))
 			{
-				Entity same = assign_table.get(ret.getValue());
+				Entity same = assign_table.get(ret.second);
 				if (same == null)
 				{
 					in_dependency.addAll(getIn_dependency(node.getRhs()));
-					assign_table.put(ret.getValue(), entity);
+					assign_table.put(ret.second, entity);
 				}
 				else
 					rhs = new Var(same);
@@ -838,11 +836,11 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		{
 			Pair<Boolean, Integer> left = expr_hash(((BinaryOpNode) node).getLeft_son());
 			Pair<Boolean, Integer> right = expr_hash(((BinaryOpNode) node).getRight_son());
-			if (left.getKey() && right.getKey())
+			if (left.first && right.first)
 			{
 				int hash = ((BinaryOpNode) node).getOperator().hashCode();
-				hash += left.getValue();
-				hash += right.getValue() ^ 0x5D;
+				hash += left.second;
+				hash += right.second ^ 0x5D;
 				return new Pair<>(true, hash);
 			}
 			else
