@@ -66,6 +66,11 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		{
 			entity.init_offset(CLASS_MEMBER_ALIGNMENT_SIZE);
 		}
+		if (Enable_Function_Inline)
+		{
+			for (FunctionEntity functionEntity : ast.getFunctionEntityList())
+				functionEntity.check_inlinable();
+		}
 		for (FunctionEntity entity : ast.getFunctionEntityList())
 		{
 			tmp_stack = new LinkedList<>();
@@ -413,7 +418,13 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		}
 		else
 		{
-			return new Var(node.getEntity());
+			if (inline_mode > 0)
+			{
+				Entity entity = inline_map.peek().get(node.getEntity());
+				return new Var(entity == null ? node.getEntity() : entity);
+			}
+			else
+				return new Var(node.getEntity());
 		}
 	}
 
@@ -730,7 +741,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 				case LOGIC_OR: op = BinaryOp.LOGIC_OR; break;
 				case LOGIC_AND: op = BinaryOp.LOGIC_AND; break;
 				default:
-					throw new InternalErrorS(node.getLocation(), "unsupport operator for int : " + node.getOperator());
+					throw new InternalErrorS(node.getLocation(), "unsupported operator for int : " + node.getOperator());
 			}
 			return new Binary(lhs, rhs, op);
 		}

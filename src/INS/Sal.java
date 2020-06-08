@@ -12,7 +12,7 @@ public class Sal extends Bin
 	@Override
 	public String name()
 	{
-		return "sal";
+		return "sll";
 	}
 
 	@Override

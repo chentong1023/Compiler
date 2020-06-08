@@ -63,6 +63,7 @@ public class InstructionEmitter implements IRVisitor
 	{
 		if (entity.is_inlined())
 			return null;
+		System.err.println("~~~~" + entity.getName() + "~~~~");
 		int call_size = entity.getCalls().size();
 		for (FunctionEntity call : entity.getCalls())
 		{
@@ -86,6 +87,7 @@ public class InstructionEmitter implements IRVisitor
 		else is_inleaf = false;
 		for (ParameterEntity parameterEntity : entity.getParameterEntityList())
 		{
+			System.err.println(parameterEntity.getName());
 			parameterEntity.setReference(new Reference(parameterEntity));
 			parameterEntity.setSource(new Reference(parameterEntity.getName() + "_src", Reference.Type.CANNOT_COLOR));
 		}
@@ -328,6 +330,7 @@ public class InstructionEmitter implements IRVisitor
 		expr_depth++;
 		Operand rhs = visit_expr(ir.getRight());
 		expr_depth--;
+		System.err.println(dest + " = " + rhs);
 		if (dest.is_address() && rhs.is_address())
 		{
 			Reference tmp = get_tmp();
@@ -564,7 +567,7 @@ public class InstructionEmitter implements IRVisitor
 		{
 			Operand expr = visit_expr(ir.getExpr());
 			expr = eliminate_address(expr);
-			return expr;
+			return new Address(expr);
 		}
 	}
 
@@ -572,7 +575,9 @@ public class InstructionEmitter implements IRVisitor
 	public Operand visit(Return ir)
 	{
 		if (ir.getExpr() == null)
+		{
 			ins.add(new InsReturn(null));
+		}
 		else
 		{
 			Operand ret = visit_expr(ir.getExpr());

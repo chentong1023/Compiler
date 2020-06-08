@@ -12,7 +12,7 @@ public class Sar extends Bin
 	@Override
 	public String name()
 	{
-		return "sar";
+		return "sra";
 	}
 
 	@Override

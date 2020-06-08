@@ -26,13 +26,14 @@ import java.util.List;
 
 import Type.*;
 
+import static Compiler.Defines.DEBUG_IR;
 import static Type.Type.*;
 import static Utils.LibFunction.LIB_PREFIX;
 import static java.lang.System.exit;
 
 public class Compiler {
     static private InputStream is;
-    static private String input_file = null;
+    static private String input_file = "code.mx";
     static private String output_file = null;
 
     static public void display_help()
@@ -64,8 +65,7 @@ public class Compiler {
                     Defines.Output_Tree_IR = true;
             }
         }
-        if (input_file == null) is = System.in;
-        else is = new FileInputStream(input_file);
+        is = new FileInputStream(input_file);
 
         PrintStream os;
         if (output_file == null) os = System.out;
@@ -106,7 +106,6 @@ public class Compiler {
 
         InstructionEmitter emitter = new InstructionEmitter(irBuilder);
         emitter.emit();
-        emitter.print_INS();
 
          ControlFlowAnalyzer cfg_builder = new ControlFlowAnalyzer(emitter);
          cfg_builder.build_cf();
@@ -127,9 +126,9 @@ public class Compiler {
         func.add(new LibFunction(stringType, "getString", null).getEntity());
         func.add(new LibFunction(integerType, "getInt", null).getEntity());
         func.add(new LibFunction(stringType, "toString", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType,   "printInt", LIB_PREFIX + "printInt", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType,  "printlnInt", LIB_PREFIX + "printlnInt", new Type[]{integerType}).getEntity());
-        func.add(new LibFunction(integerType,  "malloc", LIB_PREFIX + "malloc",new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,   "printInt", "printInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,  "printlnInt", "printlnInt", new Type[]{integerType}).getEntity());
+        func.add(new LibFunction(integerType,  "malloc", "malloc",new Type[]{integerType}).getEntity());
         func.add(new VariableEntity("null", null, nullType, null));
         return func;
     }

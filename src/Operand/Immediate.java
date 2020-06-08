@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Immediate extends Operand
 {
-	enum Type {LABEL, INTEGER}
+	public enum Type {LABEL, INTEGER}
 	private int value;
 	private String label;
 	private Type type;

@@ -46,9 +46,9 @@ int main() {
 	ARRAY b = new ARRAY();
 	array c = new array;
 	Array d = new Array();
-	print(toString(size()));
+	print(toString(size()) + " ");
 	println(toString(a.size()));
-	print(toString(b.size()));
-	print(toString(c.size()));
+	print(toString(b.size()) + " ");
+	print(toString(c.size()) + " ");
 	println(toString(d.size()));
 }

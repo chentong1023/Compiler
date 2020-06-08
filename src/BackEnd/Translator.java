@@ -49,9 +49,9 @@ public class Translator implements INSVisitor
 	private void add(String op, Operand l, Operand r)
 	{
 		if (!(op.equals("mv")))
-			asm.add("\t" + op + "\t" + l.to_NASM() + "\t" + l.to_NASM() + "\t" + r.to_NASM());
+			asm.add("\t" + op + "\t" + l.to_NASM() + ",\t" + l.to_NASM() + ",\t" + r.to_NASM());
 		else if (l.to_NASM() != r.to_NASM())
-			asm.add("\t" + op + "\t" + l + "\t" + r);
+			asm.add("\t" + op + "\t" + l.to_NASM() + ",\t" + r.to_NASM());
 	}
 	private void add_move(Operand dest, Operand src)
 	{
@@ -65,11 +65,16 @@ public class Translator implements INSVisitor
 			if (src instanceof Address)
 			{
 				simplify_address(((Address) src));
-				add("lw\t" + dest + ",\t" + ((Address) src).getAdd() + "(" + rt0 + ")");
+				add("lw\t" + dest.to_NASM() + ",\t" + ((Address) src).getAdd() + "(" + rt0 + ")");
 			}
 			else if (src instanceof Immediate)
 			{
-				add("li\t" + dest.to_NASM() + "\t" + src.to_NASM());
+				if (((Immediate) src).getType() == Immediate.Type.INTEGER)
+					add("li\t" + dest.to_NASM() + ",\t" + src.to_NASM());
+				else if (((Immediate) src).getType() == Immediate.Type.LABEL)
+					add("la\t" + dest.to_NASM() + ",\t" + src.to_NASM());
+				else
+					throw new InternalErrorS("what the fuck?");
 			}
 			else if (!(src instanceof Reference))
 			{
@@ -94,7 +99,7 @@ public class Translator implements INSVisitor
 			if (dest instanceof Address)
 			{
 				simplify_address(((Address) dest));
-				add("sw\t" + src + ",\t" + ((Address) dest).getAdd() + "(" + rt0 + ")");
+				add("sw\t" + src.to_NASM() + ",\t" + ((Address) dest).getAdd() + "(" + rt0 + ")");
 			}
 			else if (!(dest instanceof Reference))
 			{
@@ -111,9 +116,14 @@ public class Translator implements INSVisitor
 			}
 			else
 			{
-
+				throw new InternalErrorS("what the fuck?");
 			}
 		}//save
+		else
+		{
+			add_move(rt1, src);
+			add_move(dest, rt1);
+		}
 	}
 	private void add_bin(String name, Operand left, Operand right)
 	{
@@ -123,12 +133,23 @@ public class Translator implements INSVisitor
 			rs1 = rt0;
 			add_move(rs1, left);
 		}
-		if (!right.is_register())
+		if (right instanceof Immediate && ((Immediate) right).getType() == Immediate.Type.INTEGER)
 		{
-			rs2 = rt1;
-			add_move(rs2, right);
+			if ((name == "add" || name == "sub") && ((Immediate) right).getValue() == 0)
+				;
+			else if (name == "sub")
+				add("addi\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + -((Immediate) right).getValue());
+			else add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
 		}
-		add(name, rs1, rs2);
+		else
+		{
+			if (!right.is_register())
+			{
+				rs2 = rt1;
+				add_move(rs2, right);
+			}
+			add(name, rs1, rs2);
+		}
 		if (left != rs1)
 			add_move(left, rs1);
 	}
@@ -150,12 +171,12 @@ public class Translator implements INSVisitor
 		if (!operand.is_register())
 		{
 			add_move(rt0, operand);
-			add(name + " " + rt0 + " " + rt0);
+			add(name + "\t" + rt0 + ",\t" + rt0);
 			add_move(operand, rt0);
 		}
 		else
 		{
-			add(name + " " + operand + " " + operand);
+			add(name + "\t" + operand + ",\t" + operand);
 		}
 	}
 	private void add(String op, Operand l)
@@ -265,10 +286,10 @@ public class Translator implements INSVisitor
 			if (register.isCallee_save())
 				callee.add(register);
 		add_bin("sub", rsp, new Immediate(callee.size() * REG_SIZE));
-		int push_cnter = 0;
+		int push_cnter = 1;
 		for (Register register : callee)
 		{
-			add_move(new Reference(push_cnter * REG_SIZE, rsp), register);
+			add_move(new Reference(callee.size() * REG_SIZE - push_cnter * REG_SIZE, rsp), register);
 			push_cnter++;
 		}
 
@@ -286,6 +307,12 @@ public class Translator implements INSVisitor
 		prologue = asm;
 		asm = backup;
 		asm.addAll(start_pos, prologue);
+		push_cnter = 1;
+		for (Register register : callee)
+		{
+			add_move(register, new Reference(callee.size() * REG_SIZE - push_cnter * REG_SIZE, rsp));
+			push_cnter++;
+		}
 		add_bin("add", rsp, new Immediate(callee.size() * REG_SIZE));
 		add("ret");
 	}
@@ -388,22 +415,22 @@ public class Translator implements INSVisitor
 			if (ins.getCond() instanceof Immediate)
 			{
 				if (((Immediate) ins.getCond()).getValue() != 0)
-					add("j" + ins.getTrue_label().getName());
+					add("j\t" + ins.getTrue_label().getName());
 				else
-					add("j" + ins.getFalse_label().getName());
+					add("j\t" + ins.getFalse_label().getName());
 			}
 			else
 			{
 				add_move(rt0, ins.getCond());
 
 				if (ins.getFall_through() == ins.getTrue_label())
-					add("beqz " + rt0 + ins.getFalse_label());
+					add("beqz\t" + rt0 + ",\t" + ins.getFalse_label());
 				else if (ins.getFall_through() == ins.getFalse_label())
-					add("bnez " + rt0 + ins.getTrue_label());
+					add("bnez\t" + rt0 + ",\t" + ins.getTrue_label());
 				else
 				{
-					add("bnez " + rt0 + ins.getTrue_label());
-					add("beqz " + rt0 + ins.getFalse_label());
+					add("bnez\t" + rt0 + ",\t" + ins.getTrue_label());
+					add("beqz\t" + rt0 + ",\t" + ins.getFalse_label());
 				}
 			}
 		}
@@ -421,13 +448,13 @@ public class Translator implements INSVisitor
 			if (ins.getFall_through() == ins.getTrue_label())
 			{
 				name = InsCJump.get_not_name(name);
-				add(name + " " + rt0 + " " + ins.getFalse_label().getName());
+				add(name + "\t" + rt0 + ",\t" + ins.getFalse_label().getName());
 			}
 			else if (ins.getFall_through() == ins.getFalse_label())
-				add(name + " " + rt0 + " " + ins.getTrue_label().getName());
+				add(name + "\t" + rt0 + ",\t" + ins.getTrue_label().getName());
 			else
 			{
-				add(name + " " + rt0 + " " + ins.getTrue_label().getName());
+				add(name + "\t" + rt0 + ",\t" + ins.getTrue_label().getName());
 				add(InsCJump.get_not_name(name) + " " + rt0 + " " + ins.getFalse_label());
 			}
 		}
@@ -443,7 +470,7 @@ public class Translator implements INSVisitor
 	@Override
 	public void visit(Jmp ins)
 	{
-		add("j " + ins.getDest());
+		add("j\t" + ins.getDest());
 	}
 
 	@Override
@@ -529,13 +556,13 @@ public class Translator implements INSVisitor
 	@Override
 	public void visit(Neg ins)
 	{
-		add_unary("neg ", ins.getOperand());
+		add_unary("neg", ins.getOperand());
 	}
 
 	@Override
 	public void visit(Not ins)
 	{
-		add_unary("not ", ins.getOperand());
+		add_unary("not", ins.getOperand());
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import Utils.LibFunction;
 
 public class StringType extends Type {
     static final int DEFAULT_SIZE = 8;
-    private static final String LIB_PREFIX = "__LIB_";
     public static final String STRING_CONSTANT_PREFIX = "__STR_CONST_";
     static public FunctionEntity operatorADD, operatorEQ, operatorNE, operatorLT, operatorGT, operatorLE, operatorGE;
     @Override
@@ -27,19 +26,19 @@ public class StringType extends Type {
     static private Scope scope;
     static public void initialize_builtin_function()
     {
-        operatorADD = new LibFunction(stringType, LIB_PREFIX + "str_operator_ADD", new Type[] {stringType, stringType}).getEntity();
-        operatorEQ = new LibFunction(stringType, LIB_PREFIX + "str_operator_EQ", new Type[] {stringType, stringType}).getEntity();
-        operatorNE = new LibFunction(stringType, LIB_PREFIX + "str_operator_NE", new Type[] {stringType, stringType}).getEntity();
-        operatorLT = new LibFunction(stringType, LIB_PREFIX + "str_operator_LT", new Type[] {stringType, stringType}).getEntity();
-        operatorGT = new LibFunction(stringType, LIB_PREFIX + "str_operator_GT", new Type[] {stringType, stringType}).getEntity();
-        operatorLE = new LibFunction(stringType, LIB_PREFIX + "str_operator_LE", new Type[] {stringType, stringType}).getEntity();
-        operatorGE = new LibFunction(stringType, LIB_PREFIX + "str_operator_GE", new Type[] {stringType, stringType}).getEntity();
+        operatorADD = new LibFunction(stringType, "string_add", new Type[] {stringType, stringType}).getEntity();
+        operatorEQ = new LibFunction(stringType, "string_eq", new Type[] {stringType, stringType}).getEntity();
+        operatorNE = new LibFunction(stringType, "string_ne", new Type[] {stringType, stringType}).getEntity();
+        operatorLT = new LibFunction(stringType, "string_lt", new Type[] {stringType, stringType}).getEntity();
+        operatorGT = new LibFunction(stringType, "string_gt", new Type[] {stringType, stringType}).getEntity();
+        operatorLE = new LibFunction(stringType, "string_le", new Type[] {stringType, stringType}).getEntity();
+        operatorGE = new LibFunction(stringType, "string_ge", new Type[] {stringType, stringType}).getEntity();
 
         scope = new Scope(true);
-        scope.insert(new LibFunction(integerType, "length", LIB_PREFIX + "str_length", new Type[] {stringType}).getEntity());
-        scope.insert(new LibFunction(stringType, "substring", LIB_PREFIX + "str_substring", new Type[] {stringType, integerType, integerType}).getEntity());
-        scope.insert(new LibFunction(integerType, "parseInt", LIB_PREFIX + "str_parseInt", new Type[] {stringType}).getEntity());
-        scope.insert(new LibFunction(integerType, "ord", LIB_PREFIX + "str_ord", new Type[] {stringType, integerType}).getEntity());
+        scope.insert(new LibFunction(integerType, "length", "string_length", new Type[] {stringType}).getEntity());
+        scope.insert(new LibFunction(stringType, "substring", "string_substring", new Type[] {stringType, integerType, integerType}).getEntity());
+        scope.insert(new LibFunction(integerType, "parseInt", "string_parseInt", new Type[] {stringType}).getEntity());
+        scope.insert(new LibFunction(integerType, "ord", "string_ord", new Type[] {stringType, integerType}).getEntity());
 
         scope.insert(operatorADD);
         scope.insert(operatorLT);

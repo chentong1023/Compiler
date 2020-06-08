@@ -79,10 +79,16 @@ public class Allocator
 		precolored.forEach(reference -> {reference.is_precolored = true; reference.color = reference.getRegister();});
 
 		caller_save_reg_ref = new HashSet<>();
-
+		for (int i = 0; i < 32; ++i)
+			if (i == 0 || i == 3 || i == 4 || registerConfig.getRegisters().get(i).isCallee_save());
+			else caller_save_reg_ref.add(new Reference(registerConfig.getRegisters().get(i)));
 
 		for (int i = 9; i < 32; ++i)
-			colors.add(registerConfig.getRegisters().get(i));
+			if (registerConfig.getRegisters().get(i).isCallee_save())
+				colors.add(registerConfig.getRegisters().get(i));
+		for (int i = 9; i < 32; ++i)
+			if (!registerConfig.getRegisters().get(i).isCallee_save())
+				colors.add(registerConfig.getRegisters().get(i));
 	}
 
 	public void allocate()
