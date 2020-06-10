@@ -65,23 +65,23 @@ public class Allocator
 		rra0 = new Reference(ra0);
 
 		para_register_ref = new LinkedList<>();
-		registerConfig.getPara_registers().forEach(register -> {para_register_ref.add(new Reference(register));});
+		for (Register register : registerConfig.getPara_registers())
+		{
+			para_register_ref.add(new Reference(register));
+		}
 		precolored = new LinkedHashSet<>();
 		precolored.addAll(para_register_ref);
-		precolored.add(rra0);
-		precolored.add(new Reference(rt0));
-		precolored.add(new Reference(rt1));
-		precolored.add(new Reference(rt2));
-		precolored.add(new Reference(rra));
-		precolored.add(new Reference(rgp));
-		precolored.add(new Reference(rtp));
-		precolored.add(new Reference(rfp));
-		precolored.forEach(reference -> {reference.is_precolored = true; reference.color = reference.getRegister();});
+		for (Reference reference : precolored)
+		{
+			reference.is_precolored = true;
+			reference.color = reference.getRegister();
+		}
 
 		caller_save_reg_ref = new HashSet<>();
 		for (int i = 0; i < 32; ++i)
 			if (i == 0 || i == 3 || i == 4 || registerConfig.getRegisters().get(i).isCallee_save());
-			else caller_save_reg_ref.add(new Reference(registerConfig.getRegisters().get(i)));
+			else
+				caller_save_reg_ref.add(new Reference(registerConfig.getRegisters().get(i)));
 
 		for (int i = 9; i < 32; ++i)
 			if (registerConfig.getRegisters().get(i).isCallee_save())
@@ -89,6 +89,7 @@ public class Allocator
 		for (int i = 9; i < 32; ++i)
 			if (!registerConfig.getRegisters().get(i).isCallee_save())
 				colors.add(registerConfig.getRegisters().get(i));
+		K = colors.size();
 	}
 
 	public void allocate()
@@ -104,16 +105,14 @@ public class Allocator
 			Set<Register> reg_used = new HashSet<>();
 
 			for (BasicBlock basicBlock : functionEntity.getBasicBlocks())
-			{
 				for (Instruction ins : basicBlock.getIns())
 					replace_reg_for_ins(ins, all_ref, reg_used);
-				functionEntity.setAll_reference(all_ref);
-				LinkedList<Register> listRegUse = new LinkedList<>(reg_used);
-				functionEntity.setReg_used(listRegUse);
-				if (iter != 1)
-					functionEntity.getReg_used().add(rfp);
-				functionEntity.setLocal_variable_offset(local_offset);
-			}
+			functionEntity.setAll_reference(all_ref);
+			LinkedList<Register> listRegUse = new LinkedList<>(reg_used);
+			functionEntity.setReg_used(listRegUse);
+			if (iter != 1)
+				functionEntity.getReg_used().add(rfp);
+			functionEntity.setLocal_variable_offset(local_offset);
 		}
 	}
 
@@ -335,9 +334,7 @@ public class Allocator
 					if (!def.contains(reference))
 						use.add(reference);
 				for (Reference reference : ins.getDef())
-				{
 					def.add(reference);
-				}
 				if (iter == 0)
 					initial.addAll(ins.getAll_ref());
 			}
@@ -383,6 +380,7 @@ public class Allocator
 			{
 				if (raw instanceof InsCall)
 				{
+					//System.err.println("~~~~~call:" + ((InsCall) raw).getEntity().getAsm_name() + "~~~~~~");
 					Set<Reference> para_reg_used = new HashSet<>();
 					InsCall ins = (InsCall) raw;
 					int i = 0, push_counter = 0;
@@ -406,7 +404,8 @@ public class Allocator
 						}
 						i++;
 					}
-					newIns.add(new Sub(rsp, new Immediate(pushList.size() * REG_SIZE)));
+					if (pushList.size() > 0)
+						newIns.add(new Sub(rsp, new Immediate(pushList.size() * REG_SIZE)));
 					for (Operand operand : pushList)
 					{
 						newIns.add(new Move(new Reference(push_counter * REG_SIZE, rsp), operand));
@@ -728,7 +727,7 @@ public class Allocator
 		Iterator<Reference> iter = spill_worklist.iterator();
 		Reference to_spill = iter.next();
 		protect.add("i"); protect.add("j");
-		while (protect.contains(to_spill.getName()) || to_spill.getName().contains("spill") && iter.hasNext())
+		while ((protect.contains(to_spill.getName()) || to_spill.getName().contains("spill")) && iter.hasNext())
 			to_spill = iter.next();
 		move(to_spill, spill_worklist, simplify_worklist);
 		freezeMove(to_spill);
@@ -780,7 +779,8 @@ public class Allocator
 			spilled_node.set_offset(-local_offset, rfp);
 		}
 
-		coalesced_nodes.forEach(x -> getAlias(x));
+		for(Reference ref:coalesced_nodes)
+			getAlias(ref);
 
 		List<Instruction> stores = new LinkedList<>();
 		for (BasicBlock basicBlock : entity.getBasicBlocks())

@@ -5,7 +5,7 @@ import ExceptionS.SemanticError;
 import Utils.LibFunction;
 
 public class ArrayType extends Type {
-    static final int DEFAULT_SIZE = 8;
+    static final int DEFAULT_SIZE = 4;
     private Type base_type;
 
     public ArrayType(Type base_type) {this.base_type = base_type;}

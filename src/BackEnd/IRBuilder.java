@@ -101,6 +101,11 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	}
 	private void compile_function(FunctionEntity entity)
 	{
+		if (entity.is_inlined())
+		{
+			System.err.println("Optmize Message : " + entity.getAsm_name() + " is inlined");
+			return ;
+		}
 		Label begin = new Label();
 		Label end = new Label();
 
@@ -178,7 +183,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	{
 		refresh_tmp_stack();
 		if (node == null)
-		return null;
+			return null;
 		expr_depth++;
 		if (max_depth < expr_depth)
 			max_depth = expr_depth;
@@ -433,6 +438,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	{
 		clear_assign_table();
 		FunctionEntity entity = node.function_type().getEntity();
+		if (current_function != null) current_function.add_call(entity);
 		if (entity.getName().equals("print"))
 		{
 			expand_print(node.getArgs().get(0), false, true);
@@ -749,13 +755,22 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 
 	private Var new_int_tmp()
 	{
-		if (tmp_top >= tmp_stack.size())
+		if (Enable_Global_Register_Allocation)
 		{
-			VariableEntity tmp = new VariableEntity("tmp" + tmp_top, null, new IntegerType(), null);
+			VariableEntity tmp = new VariableEntity("tmp" + new_int_temp_counter++, null, new IntegerType(), null);
 			current_function.getScope().insert(tmp);
-			tmp_stack.add(new Var(tmp));
+			return new Var(tmp);
 		}
-		return tmp_stack.get(tmp_top++);
+		else
+		{
+			if (tmp_top >= tmp_stack.size())
+			{
+				VariableEntity tmp = new VariableEntity("tmp" + tmp_top, null, new IntegerType(), null);
+				current_function.getScope().insert(tmp);
+				tmp_stack.add(new Var(tmp));
+			}
+			return tmp_stack.get(tmp_top++);
+		}
 	}
 
 	@Override

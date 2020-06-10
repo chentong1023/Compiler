@@ -23,7 +23,7 @@ public class Translator implements INSVisitor
 	private List<Register> para_register;
 	private List<String> asm = new LinkedList<>();
 
-	private Register rfp, rsp, rt0, rt1, rt2, ra0;
+	private Register rfp, rsp, rt0, rt1, rt2, ra0, rra;
 
 	public Translator(InstructionEmitter emitter, RegisterConfig registerConfig)
 	{
@@ -39,6 +39,7 @@ public class Translator implements INSVisitor
 		rt1 = registerConfig.getRegisters().get(6);
 		rt2 = registerConfig.getRegisters().get(7);
 		ra0 = registerConfig.getRegisters().get(10);
+		rra = registerConfig.getRegisters().get(1);
 	}
 
 	private void add(String ins) {asm.add("\t" + ins);}
@@ -125,6 +126,12 @@ public class Translator implements INSVisitor
 			add_move(dest, rt1);
 		}
 	}
+	private int log2(int x)
+	{
+		for (int i = 0; i < 30; ++i)
+			if ((1 << i) == x) return i;
+			return -1;
+	}
 	private void add_bin(String name, Operand left, Operand right)
 	{
 		Operand rs1 = left, rs2 = right;
@@ -137,6 +144,20 @@ public class Translator implements INSVisitor
 		{
 			if ((name == "add" || name == "sub") && ((Immediate) right).getValue() == 0)
 				;
+			else if (name == "mul" || name == "div")
+			{
+				if (log2(((Immediate) right).getValue()) != -1)
+				{
+					if (name == "mul") add("slli\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
+					else add("srli\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
+				}
+				else
+				{
+					rs2 = rt1;
+					add_move(rs2, right);
+					add(name, rs1, rs2);
+				}
+			}
 			else if (name == "sub")
 				add("addi\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + -((Immediate) right).getValue());
 			else add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
@@ -150,6 +171,7 @@ public class Translator implements INSVisitor
 			}
 			add(name, rs1, rs2);
 		}
+
 		if (left != rs1)
 			add_move(left, rs1);
 	}
@@ -271,11 +293,6 @@ public class Translator implements INSVisitor
 		{
 			for (Instruction ins : basicBlock.getIns())
 				ins.accept(this);
-			if (basicBlock.getLabel() == entity.getEnd_label_INS())
-			{
-				if (entity.getCalls().size() != 0 && entity.getFrame_size() != 0)
-					add_bin("add", rsp, new Immediate((entity.getFrame_size())));
-			}
 		}
 
 		List<String> backup = asm, prologue;
@@ -285,25 +302,24 @@ public class Translator implements INSVisitor
 		for (Register register : entity.getReg_used())
 			if (register.isCallee_save())
 				callee.add(register);
-		add_bin("sub", rsp, new Immediate(callee.size() * REG_SIZE));
+			callee.add(rra);
 		int push_cnter = 1;
+		if (entity.getReg_used().contains(rfp))
+			add("mv", rfp, rsp);
+		add_bin("sub", rsp, new Immediate(entity.getFrame_size() + callee.size() * REG_SIZE));
 		for (Register register : callee)
 		{
 			add_move(new Reference(callee.size() * REG_SIZE - push_cnter * REG_SIZE, rsp), register);
 			push_cnter++;
 		}
 
-		if (entity.getReg_used().contains(rfp))
-			add("mv", rfp, rsp);
-		if (entity.getCalls().size() != 0 && entity.getFrame_size() != 0)
-			add_bin("sub", rsp, new Immediate(entity.getFrame_size()));
 		List<ParameterEntity> params = entity.getParameterEntityList();
-		for (ParameterEntity param : params)
+		/*for (ParameterEntity param : params)
 		{
 			if (!param.getReference().equals(param.getSource()))
 				add_move(param.getReference(),param.getSource());
 		}
-		add("");
+		add("");*/
 		prologue = asm;
 		asm = backup;
 		asm.addAll(start_pos, prologue);
@@ -313,7 +329,7 @@ public class Translator implements INSVisitor
 			add_move(register, new Reference(callee.size() * REG_SIZE - push_cnter * REG_SIZE, rsp));
 			push_cnter++;
 		}
-		add_bin("add", rsp, new Immediate(callee.size() * REG_SIZE));
+		add_bin("add", rsp, new Immediate((entity.getFrame_size() + callee.size() * REG_SIZE)));
 		add("ret");
 	}
 
@@ -374,6 +390,10 @@ public class Translator implements INSVisitor
 	{
 		List<Operand> operands = ins.getOperands();
 
+//		System.err.println(ins.getEntity().getAsm_name());
+//		for (Reference caller : ins.getCallorsave())
+//			System.err.println(caller.to_NASM());
+
 		int push_cnter = 0;
 		int offset = (operands.size() - para_register.size()) * REG_SIZE;
 		if (operands.size() > para_register.size())
@@ -424,13 +444,13 @@ public class Translator implements INSVisitor
 				add_move(rt0, ins.getCond());
 
 				if (ins.getFall_through() == ins.getTrue_label())
-					add("beqz\t" + rt0 + ",\t" + ins.getFalse_label());
+					add("beqz\t" + rt0 + ",\t" + ins.getFalse_label().getName());
 				else if (ins.getFall_through() == ins.getFalse_label())
-					add("bnez\t" + rt0 + ",\t" + ins.getTrue_label());
+					add("bnez\t" + rt0 + ",\t" + ins.getTrue_label().getName());
 				else
 				{
-					add("bnez\t" + rt0 + ",\t" + ins.getTrue_label());
-					add("beqz\t" + rt0 + ",\t" + ins.getFalse_label());
+					add("bnez\t" + rt0 + ",\t" + ins.getTrue_label().getName());
+					add("beqz\t" + rt0 + ",\t" + ins.getFalse_label().getName());
 				}
 			}
 		}
@@ -439,23 +459,28 @@ public class Translator implements INSVisitor
 			String name = ins.name();
 			Operand left = ins.getLeft(), right = ins.getRight();
 
-			if (left instanceof Immediate)
+			if (!left.is_register())
 			{
-				Operand t = left; left = right; right = t;
-				name = InsCJump.get_reflect(name);
+				add_move(rt0, left);
+				left = rt0;
+			}
+			if (!right.is_register())
+			{
+				add_move(rt1, right);
+				right = rt1;
 			}
 
 			if (ins.getFall_through() == ins.getTrue_label())
 			{
 				name = InsCJump.get_not_name(name);
-				add(name + "\t" + rt0 + ",\t" + ins.getFalse_label().getName());
+				add(name + "\t" + left.to_NASM() + ",\t" + right.to_NASM() + ",\t" + ins.getFalse_label().getName());
 			}
 			else if (ins.getFall_through() == ins.getFalse_label())
-				add(name + "\t" + rt0 + ",\t" + ins.getTrue_label().getName());
+				add(name + "\t" + left.to_NASM() + ",\t" + right.to_NASM() + ",\t" + ins.getTrue_label().getName());
 			else
 			{
-				add(name + "\t" + rt0 + ",\t" + ins.getTrue_label().getName());
-				add(InsCJump.get_not_name(name) + " " + rt0 + " " + ins.getFalse_label());
+				add(name + "\t" + left.to_NASM() + ",\t" + right.to_NASM() + ",\t" + ins.getTrue_label().getName());
+				add(InsCJump.get_not_name(name) + "\t" + left.to_NASM() + ",\t" + right.to_NASM() + ",\t" + ins.getFalse_label().getName());
 			}
 		}
 	}
@@ -470,14 +495,13 @@ public class Translator implements INSVisitor
 	@Override
 	public void visit(Jmp ins)
 	{
-		add("j\t" + ins.getDest());
+		add("j\t" + ins.getDest().getName());
 	}
 
 	@Override
 	public void visit(Lea ins)
 	{
-		if (!Enable_Global_Register_Allocation)
-			simplify_address(ins.getAddr());
+		simplify_address(ins.getAddr());
 		ins.getAddr().setShow_size(false);
 		add_move(ins.getDest(), rt0);
 	}

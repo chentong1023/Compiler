@@ -2,7 +2,7 @@ package Type;
 
 public class BoolType extends Type {
 
-    static final int DEFAULT_SIZE = 8;
+    static final int DEFAULT_SIZE = 4;
 
     @Override
     public boolean is_bool() {return true;}

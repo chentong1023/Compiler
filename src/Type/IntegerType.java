@@ -1,7 +1,7 @@
 package Type;
 
 public class IntegerType extends Type {
-    static final int DEFAULT_SIZE = 8;
+    static final int DEFAULT_SIZE = 4;
 
     @Override
     public boolean is_int() {return true;}

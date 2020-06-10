@@ -19,7 +19,7 @@ public class Mem extends Expr
 	@Override
 	public String toString()
 	{
-		return "" + expr;
+		return "[" + expr + "]";
 	}
 
 	@Override

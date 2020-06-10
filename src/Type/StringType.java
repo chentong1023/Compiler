@@ -4,7 +4,7 @@ import Entity.*;
 import Utils.LibFunction;
 
 public class StringType extends Type {
-    static final int DEFAULT_SIZE = 8;
+    static final int DEFAULT_SIZE = 4;
     public static final String STRING_CONSTANT_PREFIX = "__STR_CONST_";
     static public FunctionEntity operatorADD, operatorEQ, operatorNE, operatorLT, operatorGT, operatorLE, operatorGE;
     @Override

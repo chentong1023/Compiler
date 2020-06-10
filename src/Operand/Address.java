@@ -37,7 +37,7 @@ public class Address extends Operand
 		if (base != null)
 			base = base.replace(from, to);
 		if (index != null)
-			index = index_NASM.replace(from, to);
+			index = index.replace(from, to);
 		return this;
 	}
 

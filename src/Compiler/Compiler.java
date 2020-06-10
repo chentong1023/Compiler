@@ -27,6 +27,7 @@ import java.util.List;
 import Type.*;
 
 import static Compiler.Defines.DEBUG_IR;
+import static Compiler.Defines.Output_INS;
 import static Type.Type.*;
 import static Utils.LibFunction.LIB_PREFIX;
 import static java.lang.System.exit;
@@ -61,8 +62,13 @@ public class Compiler {
                     break;
                 case "--help":
                     display_help();
+                    break;
                 case "--ir-output":
                     Defines.Output_Tree_IR = true;
+                    break;
+                case "--ins-output":
+                    Defines.Output_INS = true;
+                    break;
             }
         }
         is = new FileInputStream(input_file);
@@ -114,8 +120,17 @@ public class Compiler {
         Allocator allocator = new Allocator(emitter, registerConfig);
         allocator.allocate();
 
-        Translator translator = new Translator(emitter, registerConfig);
-        List<String> asm = translator.translate();
+        List<String> asm;
+        if (Output_INS)
+        {
+            INSListener listener = new INSListener(emitter, registerConfig);
+            asm = listener.translate();
+        }
+        else
+        {
+            Translator translator = new Translator(emitter, registerConfig);
+            asm = translator.translate();
+        }
         asm.forEach(line -> os.println(line));
     }
 

@@ -25,7 +25,10 @@ public class RegisterConfig
 
 		int[] calleeSave = {2, 8, 9, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27};
 		for (int x : calleeSave)
+		{
 			registers.get(x).setCallee_save(true);
+//			System.err.println(registers.get(x));
+		}
 
 		for (int i = 10; i < 18; ++i)
 			para_registers.add(registers.get(i));

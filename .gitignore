@@ -2,6 +2,9 @@ bin/
 lin/
 out/
 test.mx
+test.in
+test.s
+test.out
 semantic.sh
 build.sh
 codegen.sh

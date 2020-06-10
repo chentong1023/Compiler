@@ -23,7 +23,7 @@ public class InstructionEmitter implements IRVisitor
 
 	private List<Instruction> ins;
 	private FunctionEntity currentFunction;
-	private boolean is_inleaf;
+	private boolean is_inleaf = false;
 
 	public InstructionEmitter(IRBuilder irBuilder)
 	{
@@ -61,9 +61,7 @@ public class InstructionEmitter implements IRVisitor
 
 	private List<Instruction> emit_function(FunctionEntity entity)
 	{
-		if (entity.is_inlined())
-			return null;
-		System.err.println("~~~~" + entity.getName() + "~~~~");
+//		System.err.println("~~~~" + entity.getName() + "~~~~");
 		int call_size = entity.getCalls().size();
 		for (FunctionEntity call : entity.getCalls())
 		{
@@ -78,7 +76,7 @@ public class InstructionEmitter implements IRVisitor
 			{
 				if (global instanceof VariableEntity)
 				{
-					VariableEntity local = new VariableEntity(global.getName(), global.getLocation(), global.getType(), null);
+					VariableEntity local = new VariableEntity(".global_" + global.getName(), global.getLocation(), global.getType(), null);
 					global_local_map.put(global, local);
 					currentFunction.getScope().insert(local);
 				}
@@ -87,7 +85,6 @@ public class InstructionEmitter implements IRVisitor
 		else is_inleaf = false;
 		for (ParameterEntity parameterEntity : entity.getParameterEntityList())
 		{
-			System.err.println(parameterEntity.getName());
 			parameterEntity.setReference(new Reference(parameterEntity));
 			parameterEntity.setSource(new Reference(parameterEntity.getName() + "_src", Reference.Type.CANNOT_COLOR));
 		}
@@ -330,7 +327,7 @@ public class InstructionEmitter implements IRVisitor
 		expr_depth++;
 		Operand rhs = visit_expr(ir.getRight());
 		expr_depth--;
-		System.err.println(dest + " = " + rhs);
+//		System.err.println(dest + " = " + rhs);
 		if (dest.is_address() && rhs.is_address())
 		{
 			Reference tmp = get_tmp();
@@ -492,12 +489,6 @@ public class InstructionEmitter implements IRVisitor
 					throw new InternalErrorS("invalid compare operator @ visitCjump");
 			}
 
-			if (left.is_address())
-			{
-				Reference tmp = get_tmp();
-				ins.add(new Move(tmp, left));
-				left = tmp;
-			}
 			ins.add(new InsCJump(left, right, getLabel(ir.getTrue_label().getName()), getLabel(ir.getFalse_label().getName()), type));
 		}
 		else

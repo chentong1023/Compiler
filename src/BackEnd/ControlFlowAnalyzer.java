@@ -1,11 +1,13 @@
 package BackEnd;
 
 import Entity.FunctionEntity;
+import Entity.ParameterEntity;
 import INS.InsCJump;
 import INS.InsLabel;
 import INS.Instruction;
 import INS.Jmp;
 
+import java.io.PrintStream;
 import java.util.*;
 
 public class ControlFlowAnalyzer
@@ -26,6 +28,7 @@ public class ControlFlowAnalyzer
 				continue;
 			build_basic_block(functionEntity);
 			build_cfg(functionEntity);
+			Optimaize(functionEntity);
 			layoutBasicBlock(functionEntity);
 		}
 	}
@@ -147,4 +150,101 @@ public class ControlFlowAnalyzer
 		entity.setIns(null);
 	}
 
+	private void Optimaize(FunctionEntity entity)
+	{
+		boolean modified = true;
+		while (modified)
+		{
+			modified = false;
+			BasicBlock now;
+			for (BasicBlock basicBlock : entity.getBasicBlocks())
+			{
+				if (basicBlock.getSuccessor().size() == 1 && basicBlock.getSuccessor().get(0).getPredecessor().size() == 1)
+				{
+					now = basicBlock;
+					BasicBlock next = now.getSuccessor().get(0);
+					if (next.getSuccessor().size() != 0)
+					{
+						modified = true;
+						for (BasicBlock next_next : next.getSuccessor())
+						{
+							next_next.getPredecessor().remove(next);
+							next_next.getPredecessor().add(now);
+							now.getSuccessor().add(next_next);
+						}
+						next.getIns().remove(0);
+						now.getIns().remove(now.getIns().size() - 1);
+						now.getIns().addAll(next.getIns());
+						entity.getBasicBlocks().remove(next);
+						now.getSuccessor().remove(next);
+						break;
+					}
+				}
+			}
+			List<BasicBlock> useless_basic_block = new LinkedList<>();
+			for (BasicBlock to_remove : entity.getBasicBlocks())
+			{
+				if (to_remove.getIns().size() < 2)
+					continue;
+				Instruction last = to_remove.getIns().get(1);
+				if (to_remove.getIns().size() == 2 && last instanceof Jmp)
+				{
+					List<BasicBlock> backup = new LinkedList<>(to_remove.getPredecessor());
+					for (BasicBlock pre : backup)
+					{
+						Instruction jump = pre.getIns().get(pre.getIns().size() - 1);
+						if (jump instanceof Jmp)
+						{
+							modified = true;
+							((Jmp) jump).setDest(((Jmp) last).getDest());
+						}
+						else if (jump instanceof InsCJump)
+						{
+							modified = true;
+							if (((InsCJump) jump).getTrue_label() == to_remove.getLabel())
+								((InsCJump) jump).setTrue_label(((Jmp) last).getDest());
+							if (((InsCJump) jump).getFalse_label() == to_remove.getLabel())
+								((InsCJump) jump).setFalse_label(((Jmp) last).getDest());
+						}
+						pre.getSuccessor().remove(to_remove);
+						useless_basic_block.add(to_remove);
+						if (to_remove.getSuccessor().size() == 1)
+						{
+							BasicBlock suc = to_remove.getSuccessor().get(0);
+							pre.getSuccessor().add(suc);
+							suc.getPredecessor().add(pre);
+						}
+					}
+					if (modified)
+						break;
+				}
+			}
+			for (BasicBlock basicBlock : entity.getBasicBlocks())
+			{
+				if (basicBlock.getPredecessor().size() == 0 && basicBlock.getLabel() != entity.getBegin_label_INS())
+				{
+					modified = true;
+					useless_basic_block.add(basicBlock);
+				}
+			}
+			entity.getBasicBlocks().removeAll(useless_basic_block);
+		}
+	}
+
+	public void print_self(PrintStream out)
+	{
+		for (FunctionEntity functionEntity : functionEntityList)
+		{
+			out.println("=======" + functionEntity.getAsm_name() + "=======");
+			for (BasicBlock basicBlock : functionEntity.getBasicBlocks())
+			{
+				out.println("------- b -------" + "jump to:");
+				for (InsLabel label : basicBlock.getJump_to())
+					out.print("   " + label.getName());
+				out.println();
+				for (Instruction in : basicBlock.getIns())
+					out.println(in.toString());
+			}
+		}
+	}
 }

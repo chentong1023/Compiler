@@ -137,7 +137,7 @@ public class Reference extends Operand
 	{
 		try {
 			switch (type) {
-				case GLOBAL: return "." + name;
+				case GLOBAL: return name;
 				case OFFSET: return offset + "("+ register.getName() +")";
 				case REG:    return register.getName();
 				case SPECIAL:return name;

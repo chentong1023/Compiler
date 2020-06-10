@@ -12,7 +12,7 @@ public class Mod extends Bin
 	@Override
 	public String name()
 	{
-		return "mod";
+		return "rem";
 	}
 
 	@Override
