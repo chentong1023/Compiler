@@ -96,14 +96,7 @@ public class InsCall extends Instruction
 		if (ret != null)
 			def.addAll(ret.get_all_ref());
 		if (callorsave != null)
-		{
 			def.addAll(callorsave);
-//			System.err.println("~~~~~" + entity.getAsm_name() + "~~~~~");
-//			for (Reference reference : callorsave)
-//			{
-//				System.err.println(reference);
-//			}
-		}
 		for (Operand operand : operands)
 		{
 			use.addAll(operand.get_all_ref());

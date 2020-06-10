@@ -9,6 +9,7 @@ public class Defines
 	public static boolean Output_Tree_IR = false;
 	public static boolean Output_INS = false;
 	public static boolean Enable_Function_Inline = false;
+	public static boolean Enable_Self_Inline = false;
 	public static boolean Enable_Global_Register_Allocation = true;
 	public static boolean DEBUG_IR = false;
 }

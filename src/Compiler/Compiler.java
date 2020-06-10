@@ -115,6 +115,7 @@ public class Compiler {
 
          ControlFlowAnalyzer cfg_builder = new ControlFlowAnalyzer(emitter);
          cfg_builder.build_cf();
+         // cfg_builder.print_self(System.err);
 
         RegisterConfig registerConfig = new RegisterConfig();
         Allocator allocator = new Allocator(emitter, registerConfig);

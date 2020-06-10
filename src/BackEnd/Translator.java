@@ -144,7 +144,7 @@ public class Translator implements INSVisitor
 		{
 			if ((name == "add" || name == "sub") && ((Immediate) right).getValue() == 0)
 				;
-			else if (name == "mul" || name == "div")
+			else if (name == "mul" || name == "div" || name == "rem")
 			{
 				if (log2(((Immediate) right).getValue()) != -1)
 				{
@@ -160,6 +160,15 @@ public class Translator implements INSVisitor
 			}
 			else if (name == "sub")
 				add("addi\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + -((Immediate) right).getValue());
+			else if (name == "sne" || name == "slt" || name == "sgt" || name == "seq")
+			{
+				if (((Immediate) right).getValue() == 0)
+					add(name + "z\t" + left.to_NASM() + ",\t" + left.to_NASM());
+				else if (name == "sgt")
+					add(name + "\t" + right.to_NASM() + ",\t" + left.to_NASM() + ",\t" + right.to_NASM());
+				else
+					add(name + "\t" + left.to_NASM() + ",\t" + left.to_NASM() + ",\t" + right);
+			}
 			else add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
 		}
 		else
@@ -198,7 +207,7 @@ public class Translator implements INSVisitor
 		}
 		else
 		{
-			add(name + "\t" + operand + ",\t" + operand);
+			add(name + "\t" + operand.to_NASM() + ",\t" + operand.to_NASM());
 		}
 	}
 	private void add(String op, Operand l)
@@ -289,20 +298,31 @@ public class Translator implements INSVisitor
 	{
 		add_label(entity.getAsm_name());
 		int start_pos = asm.size();
+		LinkedList<Register> callee = new LinkedList<>();
+		for (Register register : entity.getReg_used())
+			if (register.isCallee_save())
+				callee.add(register);
+		callee.add(rra);
 		for (BasicBlock basicBlock : entity.getBasicBlocks())
 		{
 			for (Instruction ins : basicBlock.getIns())
 				ins.accept(this);
+			if (basicBlock.getLabel() == entity.getEnd_label_INS())
+			{
+				int pop_cnter = 1;
+				for (Register register : callee)
+				{
+					add_move(register, new Reference(callee.size() * REG_SIZE - pop_cnter * REG_SIZE, rsp));
+					pop_cnter++;
+				}
+				add_bin("add", rsp, new Immediate((entity.getFrame_size() + callee.size() * REG_SIZE)));
+				add("ret");
+			}
 		}
 
 		List<String> backup = asm, prologue;
 		asm = new LinkedList<>();
 
-		LinkedList<Register> callee = new LinkedList<>();
-		for (Register register : entity.getReg_used())
-			if (register.isCallee_save())
-				callee.add(register);
-			callee.add(rra);
 		int push_cnter = 1;
 		if (entity.getReg_used().contains(rfp))
 			add("mv", rfp, rsp);
@@ -313,8 +333,8 @@ public class Translator implements INSVisitor
 			push_cnter++;
 		}
 
-		List<ParameterEntity> params = entity.getParameterEntityList();
-		/*for (ParameterEntity param : params)
+		/*List<ParameterEntity> params = entity.getParameterEntityList();
+		for (ParameterEntity param : params)
 		{
 			if (!param.getReference().equals(param.getSource()))
 				add_move(param.getReference(),param.getSource());
@@ -323,14 +343,6 @@ public class Translator implements INSVisitor
 		prologue = asm;
 		asm = backup;
 		asm.addAll(start_pos, prologue);
-		push_cnter = 1;
-		for (Register register : callee)
-		{
-			add_move(register, new Reference(callee.size() * REG_SIZE - push_cnter * REG_SIZE, rsp));
-			push_cnter++;
-		}
-		add_bin("add", rsp, new Immediate((entity.getFrame_size() + callee.size() * REG_SIZE)));
-		add("ret");
 	}
 
 	private void visit_bin(Bin ins)
@@ -363,14 +375,29 @@ public class Translator implements INSVisitor
 		String cmpname = "";
 		switch (ins.getOperator())
 		{
-			case NE:cmpname = "sne"; break;
-			case EQ:cmpname = "se"; break;
-			case LE:cmpname = "sle"; break;
-			case GE:cmpname = "sge"; break;
-			case GT:cmpname = "sgt"; break;
-			case LT:cmpname = "slt"; break;
+			case NE:
+				add_bin("xor", left, right);
+				add_bin("sne", left, new Immediate(0));
+				break;
+			case EQ:
+				add_bin("xor", left, right);
+				add_bin("seq", left, new Immediate(0));
+				break;
+			case LE:
+				add_bin("slt", right, left);
+				add("xori\t" + left.to_NASM() + ",\t" + right.to_NASM() + ",1");
+				break;
+			case GE:
+				add_bin("slt", left, right);
+				add("xori\t" + left.to_NASM() + ",\t" + left.to_NASM() + ",1");
+				break;
+			case GT:
+				add_bin("sgt", left, right);
+				break;
+			case LT:
+				add_bin("slt", left, right);
+				break;
 		}
-		add_bin(cmpname, left, right);
 	}
 
 	@Override

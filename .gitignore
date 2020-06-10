@@ -1,6 +1,8 @@
-bin/
-lin/
-out/
+./bin/
+./lib/antlr-4.8-complete.jar
+./lib/lib.s
+./lib/size.c
+./out/
 test.mx
 test.in
 test.s
@@ -9,3 +11,4 @@ semantic.sh
 build.sh
 codegen.sh
 optmize.sh
+debug.info

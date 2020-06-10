@@ -89,11 +89,6 @@ public class Reference extends Operand
 		this.name = name;
 	}
 
-	public void setOffset(int offset)
-	{
-		this.offset = offset;
-	}
-
 	public void setOffset(int offset, Register register)
 	{
 		this.offset = offset;
@@ -104,11 +99,6 @@ public class Reference extends Operand
 	public void setEntity(Entity entity)
 	{
 		this.entity = entity;
-	}
-
-	public void setRegister(Register register)
-	{
-		this.register = register;
 	}
 
 	@Override
@@ -140,11 +130,11 @@ public class Reference extends Operand
 				case GLOBAL: return name;
 				case OFFSET: return offset + "("+ register.getName() +")";
 				case REG:    return register.getName();
-				case SPECIAL:return name;
+				case SPECIAL:
 				case UNUSED:
 				case UNKNOWN:
 				default:
-					throw new Exception();
+					throw new InternalErrorS("Fuck you!");
 					//throw new InternalError("Unallocated reference " + this);
 			}
 		} catch (Exception e) {

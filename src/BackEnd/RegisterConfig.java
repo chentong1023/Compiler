@@ -31,7 +31,9 @@ public class RegisterConfig
 		}
 
 		for (int i = 10; i < 18; ++i)
+		{
 			para_registers.add(registers.get(i));
+		}
 	}
 
 	public List<Register> getRegisters()

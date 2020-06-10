@@ -40,6 +40,11 @@ public class InsReturn extends Instruction
 	}
 
 	@Override
+	public void replace_all(Reference from, Reference to)
+	{
+	}
+
+	@Override
 	public void accept(INSVisitor visitor)
 	{
 		visitor.visit(this);

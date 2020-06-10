@@ -62,15 +62,16 @@ public class Allocator
 		rt0 = registerConfig.getRegisters().get(5);
 		rt1 = registerConfig.getRegisters().get(6);
 		rt2 = registerConfig.getRegisters().get(7);
-		rra0 = new Reference(ra0);
 
 		para_register_ref = new LinkedList<>();
 		for (Register register : registerConfig.getPara_registers())
 		{
 			para_register_ref.add(new Reference(register));
 		}
+		rra0 = para_register_ref.get(0);
 		precolored = new LinkedHashSet<>();
 		precolored.addAll(para_register_ref);
+		precolored.add(rra0);
 		for (Reference reference : precolored)
 		{
 			reference.is_precolored = true;
@@ -78,10 +79,11 @@ public class Allocator
 		}
 
 		caller_save_reg_ref = new HashSet<>();
-		for (int i = 0; i < 32; ++i)
-			if (i == 0 || i == 3 || i == 4 || registerConfig.getRegisters().get(i).isCallee_save());
-			else
-				caller_save_reg_ref.add(new Reference(registerConfig.getRegisters().get(i)));
+		for (Reference reference : precolored)
+		{
+			if (!reference.getRegister().isCallee_save())
+				caller_save_reg_ref.add(reference);
+		}
 
 		for (int i = 9; i < 32; ++i)
 			if (registerConfig.getRegisters().get(i).isCallee_save())
@@ -154,7 +156,7 @@ public class Allocator
 		@Override
 		public boolean equals(Object obj)
 		{
-			Edge edge = ((Edge) obj);
+			Edge edge = (Edge) obj;
 			return u == edge.u && v == edge.v;
 		}
 	}
@@ -458,7 +460,20 @@ public class Allocator
 					newIns.add(raw);
 			}
 			basicBlock.setIns(newIns);
+
+			// System.err.println("===#$%Y%*%^&%*&%&*== load_precolors ===");
+			// debug_print_basic_block(basicBlock);
 		}
+	}
+
+	private void debug_print_basic_block(BasicBlock basicBlock)
+	{
+		System.err.println("--- block-begin ---");
+		for (Instruction ins : basicBlock.getIns())
+		{
+			System.err.println(ins);
+		}
+		System.err.println("--- block-end ---");
 	}
 
 	private void transCompare(List<Instruction> newIns, Instruction raw, Operand left, Operand right)
@@ -520,6 +535,7 @@ public class Allocator
 			reference.reset();
 		for (BasicBlock basicBlock : functionEntity.getBasicBlocks())
 		{
+			// debug_print_basic_block(basicBlock);
 			HashSet<Reference> live = new HashSet<>(basicBlock.getLive_out());
 			ListIterator it = basicBlock.getIns().listIterator(basicBlock.getIns().size());
 			while (it.hasPrevious())
@@ -666,12 +682,15 @@ public class Allocator
 			v = y;
 		}
 		worklist_moves.remove(move);
+
+
+		Edge edge = get_edge(u, v);
 		if (u == v)
 		{
 			coalesced_moves.add(move);
 			add_work_list(u);
 		}
-		else if (precolored.contains(v) || edge_set.contains(get_edge(u, v)))
+		else if (precolored.contains(v) || edge_set.contains(edge))
 		{
 			constrained_moves.add(move);
 			add_work_list(u);
@@ -679,7 +698,7 @@ public class Allocator
 		}
 		else if (precolored.contains(u) && check(u, v) || !precolored.contains(u) && conservative(u, v))
 		{
-			constrained_moves.add(move);
+			coalesced_moves.add(move);
 			combine(u, v);
 			add_work_list(u);
 		}
@@ -752,7 +771,7 @@ public class Allocator
 
 			if (ok_colors.isEmpty())
 			{
-				move(top, select_worklist, spill_worklist);
+				move(top, select_worklist, spilled_nodes);
 				top.color = null;
 			}
 			else
@@ -763,7 +782,10 @@ public class Allocator
 			}
 		}
 		for (Reference coalesced_node : coalesced_nodes)
+		{
 			coalesced_node.color = getAlias(coalesced_node).color;
+			//System.err.println("color " + coalesced_node + " to " + getAlias(coalesced_node).color);
+		}
 	}
 
 	private int spilledCounter = 0;
@@ -852,6 +874,13 @@ public class Allocator
 				new_ins.addAll(stores);
 			}
 			basicBlock.setIns(new_ins);
+
+//			System.err.println("--- block-begin ---");
+//			for (Instruction ins : basicBlock.getIns())
+//			{
+//				System.err.println(ins);
+//			}
+//			System.err.println("--- block-end ---");
 		}
 
 		for (ParameterEntity parameterEntity : entity.getParameterEntityList())

@@ -197,8 +197,8 @@ public class InstructionEmitter implements IRVisitor
 				Binary left = ((Binary) binary.getLeft());
 				if (check_num(left.getRight()))
 				{
-					indx = left.getRight();
-					mul = ((IntConst) left.getLeft()).getValue();
+					indx = left.getLeft();
+					mul = ((IntConst) left.getRight()).getValue();
 					matched = true;
 				}
 			}

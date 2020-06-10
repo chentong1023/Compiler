@@ -454,7 +454,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		{
 			args.add(visit_expr(arg));
 		}
-		if (Enable_Function_Inline && entity.is_inlined() || (entity == current_function && entity.self_inline(inline_mode)))
+		if (Enable_Function_Inline && entity.is_inlined() || (Enable_Self_Inline && entity == current_function && entity.self_inline(inline_mode)))
 		{
 			if (expr_depth > 1)
 			{

@@ -28,7 +28,7 @@ public class ControlFlowAnalyzer
 				continue;
 			build_basic_block(functionEntity);
 			build_cfg(functionEntity);
-			Optimaize(functionEntity);
+			//Optimaize(functionEntity);
 			layoutBasicBlock(functionEntity);
 		}
 	}
