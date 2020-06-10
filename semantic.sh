@@ -1,1 +1,1 @@
-java -Dfile.encoding=UTF-8 -classpath ./lib/antlr-4.8-complete.jar:./bin Compiler.Compiler
+java -Dfile.encoding=UTF-8 -classpath ./lib/antlr-4.8-complete.jar:./bin Compiler.Compiler --semantic

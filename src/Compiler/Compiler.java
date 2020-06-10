@@ -34,7 +34,7 @@ import static java.lang.System.exit;
 
 public class Compiler {
     static private InputStream is;
-    static private String input_file = "code.mx";
+    static private String input_file = null;
     static private String output_file = null;
 
     static public void display_help()
@@ -69,9 +69,16 @@ public class Compiler {
                 case "--ins-output":
                     Defines.Output_INS = true;
                     break;
+                case "--semantic":
+                    Defines.Semantic_Only = true;
+                    break;
+                case "--local-judge":
+                    input_file = "code.mx";
+                    break;
             }
         }
-        is = new FileInputStream(input_file);
+        if (input_file == null) is = System.in;
+        else is = new FileInputStream(input_file);
 
         PrintStream os;
         if (output_file == null) os = System.out;

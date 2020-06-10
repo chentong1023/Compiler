@@ -12,4 +12,5 @@ public class Defines
 	public static boolean Enable_Self_Inline = false;
 	public static boolean Enable_Global_Register_Allocation = true;
 	public static boolean DEBUG_IR = false;
+	public static boolean Semantic_Only = false;
 }

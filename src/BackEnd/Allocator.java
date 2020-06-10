@@ -13,20 +13,20 @@ import static Compiler.Defines.REG_SIZE;
 
 public class Allocator
 {
-	private List<FunctionEntity> functionEntityList;
-	private List<Reference> para_register_ref;
-	private Set<Reference> caller_save_reg_ref;
-	private List<Register> colors = new LinkedList<>();
+	private final List<FunctionEntity> functionEntityList;
+	private final List<Reference> para_register_ref;
+	private final Set<Reference> caller_save_reg_ref;
+	private final List<Register> colors = new LinkedList<>();
 
 	// global
 	private HashMap<Edge, Edge> edge_hash_map;
 	private Set<Edge> edge_set;
-	private int K;
+	private final int K;
 	private int local_offset;
 	private Set<Edge> simplified_edge;
 
 	// node set
-	private Set<Reference> precolored;
+	private final Set<Reference> precolored;
 	private Set<Reference> initial;
 	private Set<Reference> simplify_worklist;
 	private Set<Reference> freeze_worklist;
@@ -44,8 +44,16 @@ public class Allocator
 	private Set<Move> constrained_moves;
 	private Set<Move> coalesced_moves;
 
-	private Register rfp, rsp, ra0, rt0, rt1, rt2, rra, rgp, rtp;
-	private Reference rra0;
+	private final Register rfp;
+	private final Register rsp;
+	private final Register ra0;
+	private final Register rt0;
+	private final Register rt1;
+	private final Register rt2;
+	private final Register rra;
+	private final Register rgp;
+	private final Register rtp;
+	private final Reference rra0;
 
 
 	private int iter;
@@ -72,6 +80,8 @@ public class Allocator
 		precolored = new LinkedHashSet<>();
 		precolored.addAll(para_register_ref);
 		precolored.add(rra0);
+		for (int i = 28; i < 32; ++i)
+			precolored.add(new Reference(registerConfig.getRegisters().get(i)));
 		for (Reference reference : precolored)
 		{
 			reference.is_precolored = true;
@@ -739,7 +749,7 @@ public class Allocator
 		}
 	}
 
-	private Set<String> protect = new HashSet<>();
+	private final Set<String> protect = new HashSet<>();
 
 	private void select_spill()
 	{
@@ -782,10 +792,7 @@ public class Allocator
 			}
 		}
 		for (Reference coalesced_node : coalesced_nodes)
-		{
 			coalesced_node.color = getAlias(coalesced_node).color;
-			//System.err.println("color " + coalesced_node + " to " + getAlias(coalesced_node).color);
-		}
 	}
 
 	private int spilledCounter = 0;
