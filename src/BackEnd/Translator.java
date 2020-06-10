@@ -16,14 +16,20 @@ import static Compiler.Defines.*;
 
 public class Translator implements INSVisitor
 {
-	private List<FunctionEntity> functionEntities;
-	private Scope global_scope;
+	private final List<FunctionEntity> functionEntities;
+	private final Scope global_scope;
 
-	private List<Register> registers;
-	private List<Register> para_register;
+	private final List<Register> registers;
+	private final List<Register> para_register;
 	private List<String> asm = new LinkedList<>();
 
-	private Register rfp, rsp, rt0, rt1, rt2, ra0, rra;
+	private final Register rfp;
+	private final Register rsp;
+	private final Register rt0;
+	private final Register rt1;
+	private final Register rt2;
+	private final Register ra0;
+	private final Register rra;
 
 	public Translator(InstructionEmitter emitter, RegisterConfig registerConfig)
 	{
@@ -149,7 +155,7 @@ public class Translator implements INSVisitor
 				if (log2(((Immediate) right).getValue()) != -1)
 				{
 					if (name == "mul") add("slli\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
-					else add("srli\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
+					else add("srai\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
 				}
 				else
 				{
@@ -167,7 +173,7 @@ public class Translator implements INSVisitor
 				else if (name == "sgt")
 					add(name + "\t" + right.to_NASM() + ",\t" + left.to_NASM() + ",\t" + right.to_NASM());
 				else
-					add(name + "\t" + left.to_NASM() + ",\t" + left.to_NASM() + ",\t" + right);
+					add(name + "\t" + left.to_NASM() + ",\t" + left.to_NASM() + ",\t" + right.to_NASM());
 			}
 			else add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
 		}
@@ -254,7 +260,7 @@ public class Translator implements INSVisitor
 			translate_function(functionEntity);
 			add("");
 		}
-		paste_lib_function();
+		// paste_lib_function();
 		return asm;
 	}
 
@@ -372,7 +378,7 @@ public class Translator implements INSVisitor
 		left = ins.getLeft();
 		right = ins.getRight();
 
-		String cmpname = "";
+//		if (true) throw new InternalErrorS("起飞！");
 		switch (ins.getOperator())
 		{
 			case NE:
@@ -620,19 +626,5 @@ public class Translator implements INSVisitor
 	public void visit(Push ins)
 	{
 		add_push(ins.getOperand());
-	}
-
-	private void paste_lib_function()
-	{
-		File f = new File("lib/lib.s");
-		try {
-			BufferedReader fin = new BufferedReader(new FileReader(f));
-			String line;
-			while ((line = fin.readLine()) != null)
-				asm.add(line);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 }

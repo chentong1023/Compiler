@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ControlFlowAnalyzer
 {
-	private List<FunctionEntity> functionEntityList;
+	private final List<FunctionEntity> functionEntityList;
 	private int block_cnter;
 
 	public ControlFlowAnalyzer(InstructionEmitter emitter)
@@ -28,7 +28,7 @@ public class ControlFlowAnalyzer
 				continue;
 			build_basic_block(functionEntity);
 			build_cfg(functionEntity);
-			//Optimaize(functionEntity);
+			Optimaize(functionEntity);
 			layoutBasicBlock(functionEntity);
 		}
 	}
