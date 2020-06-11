@@ -176,7 +176,16 @@ public class Translator implements INSVisitor
 				else
 					add(name + "\t" + left.to_NASM() + ",\t" + left.to_NASM() + ",\t" + right.to_NASM());
 			}
-			else add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
+			else
+			{
+				if (((Immediate) right).getValue() < (1 << 11) && ((Immediate) right).getValue() >= -(1 << 11))
+					add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
+				else
+				{
+					add("li\t" + rt2 + "\t" + ((Immediate) right).getValue());
+					add(name + "\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + rt2);
+				}
+			}
 		}
 		else
 		{
