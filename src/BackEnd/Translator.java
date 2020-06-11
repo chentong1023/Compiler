@@ -260,7 +260,6 @@ public class Translator implements INSVisitor
 			translate_function(functionEntity);
 			add("");
 		}
-		// paste_lib_function();
 		return asm;
 	}
 

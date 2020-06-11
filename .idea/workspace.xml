@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e64ae34f-48ce-4e35-b5b3-731a3dc227a7" name="Default Changelist" comment="SHA1杀我">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Compiler/Compiler.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Compiler/Compiler.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Entity/ClassEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Entity/ClassEntity.class" afterDir="false" />
@@ -86,8 +85,8 @@
       <change beforePath="$PROJECT_DIR$/bin/Type/Type.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Type/Type.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Type/VoidType.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Type/VoidType.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Utils/LibFunction.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Utils/LibFunction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BackEnd/ControlFlowAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BackEnd/ControlFlowAnalyzer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/BackEnd/Translator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BackEnd/Translator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Compiler/Compiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compiler/Compiler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,6 +199,7 @@
       <workItem from="1591577386809" duration="29671000" />
       <workItem from="1591671301239" duration="41585000" />
       <workItem from="1591758604575" duration="46492000" />
+      <workItem from="1591833237237" duration="1232000" />
     </task>
     <task id="LOCAL-00001" summary="Translator haven't done.">
       <created>1590629620786</created>
@@ -264,7 +264,14 @@
       <option name="project" value="LOCAL" />
       <updated>1591808663894</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="放开我，我还能肝">
+      <created>1591833302171</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1591833302171</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -284,7 +291,8 @@
     <MESSAGE value="我没说过你可以走了" />
     <MESSAGE value="就这就这就这" />
     <MESSAGE value="SHA1杀我" />
-    <option name="LAST_COMMIT_MESSAGE" value="SHA1杀我" />
+    <MESSAGE value="放开我，我还能肝" />
+    <option name="LAST_COMMIT_MESSAGE" value="放开我，我还能肝" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1368" y="181" key="#Notifications" timestamp="1585449726807">
@@ -321,11 +329,11 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="678" y="405" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585390700797" />
-    <state x="558" y="86" key="CommitChangelistDialog2" timestamp="1591808663285">
+    <state x="558" y="86" key="CommitChangelistDialog2" timestamp="1591833301650">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1362" y="86" key="CommitChangelistDialog2/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590645820705" />
-    <state x="558" y="86" key="CommitChangelistDialog2/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1591808663285" />
+    <state x="558" y="86" key="CommitChangelistDialog2/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1591833301650" />
     <state x="92" y="92" width="1736" height="856" key="DiffContextDialog" timestamp="1591775807128">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -412,11 +420,11 @@
     </state>
     <state x="-1457" y="165" key="SettingsEditor/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590645916121" />
     <state x="463" y="165" key="SettingsEditor/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1584688712891" />
-    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1591808666963">
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1591833306339">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1368" y="252" key="Vcs.Push.Dialog.v2/0.0.1536.824/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1590645823526" />
-    <state x="552" y="252" key="Vcs.Push.Dialog.v2/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1591808666963" />
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2/1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1591833306339" />
     <state x="522" y="275" key="com.intellij.ide.util.TipDialog" timestamp="1585444741195">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

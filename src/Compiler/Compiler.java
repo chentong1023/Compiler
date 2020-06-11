@@ -35,7 +35,7 @@ import static java.lang.System.exit;
 public class Compiler {
     static private InputStream is;
     static private String input_file = null;
-    static private String output_file = null;
+    static private String output_file = "output.s";
 
     static public void display_help()
     {
