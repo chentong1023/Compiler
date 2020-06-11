@@ -74,6 +74,7 @@ public class Compiler {
                     break;
                 case "--local-judge":
                     input_file = "code.mx";
+                    output_file = null;
                     break;
             }
         }

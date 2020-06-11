@@ -155,7 +155,8 @@ public class Translator implements INSVisitor
 				if (log2(((Immediate) right).getValue()) != -1)
 				{
 					if (name == "mul") add("slli\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
-					else add("srai\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
+					else if (name == "div") add("srai\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + log2(((Immediate) right).getValue()));
+					else add("andi\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + (((Immediate) right).getValue() - 1));
 				}
 				else
 				{
