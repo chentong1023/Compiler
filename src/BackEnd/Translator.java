@@ -182,7 +182,7 @@ public class Translator implements INSVisitor
 					add(name + "i\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + ((Immediate) right).getValue());
 				else
 				{
-					add("li\t" + rt2 + "\t" + ((Immediate) right).getValue());
+					add("li\t" + rt2 + ",\t" + ((Immediate) right).getValue());
 					add(name + "\t" + rs1.to_NASM() + ",\t" + rs1.to_NASM() + ",\t" + rt2);
 				}
 			}
