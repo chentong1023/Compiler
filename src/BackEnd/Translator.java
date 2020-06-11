@@ -65,7 +65,7 @@ public class Translator implements INSVisitor
 		if (dest.is_register() && src.is_register())
 		{
 			if (dest.to_NASM() != src.to_NASM())
-				add("mv\t" + dest.to_NASM() + "\t" + src.to_NASM());
+				add("mv\t" + dest.to_NASM() + ",\t" + src.to_NASM());
 		}
 		else if (dest.is_register())
 		{
