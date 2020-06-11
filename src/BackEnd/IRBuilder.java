@@ -19,8 +19,8 @@ import static Type.StringType.*;
 public class IRBuilder implements ASTVisitor<Void, Expr>
 {
 	public List<IR> stmts = new LinkedList<>();
-	private AST ast;
-	private Stack<Scope> scopeStack = new Stack<>();
+	private final AST ast;
+	private final Stack<Scope> scopeStack = new Stack<>();
 	private Scope current_scope;
 	private FunctionEntity current_function;
 	private List<IR> global_initializer;
@@ -121,6 +121,11 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 			}
 		}
 		visit(entity.getBody());
+		if (entity.getName().equals("main"))
+		{
+			stmts.add(new Return(new IntConst(0)));
+			stmts.add(new Jump(current_function.getEnd_label_IR()));
+		}
 		if (!(stmts.get(stmts.size() - 1) instanceof Jump))
 			stmts.add(new Jump(end));
 		add_label(end, entity.getName() + "_end");
@@ -207,11 +212,11 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	}
 
 	private int inline_mode = 0;
-	private Stack<Map<Entity, Entity>> inline_map = new Stack<>();
+	private final Stack<Map<Entity, Entity>> inline_map = new Stack<>();
 	private int inline_cnt = 0;
-	private Var inline_no_use = new Var(new VariableEntity(null, null, null, null));
-	private Stack<Label> inline_return_label = new Stack<>();
-	private Stack<Var> inline_return_var = new Stack<>();
+	private final Var inline_no_use = new Var(new VariableEntity(null, null, null, null));
+	private final Stack<Label> inline_return_label = new Stack<>();
+	private final Stack<Var> inline_return_var = new Stack<>();
 	private void inline_function(FunctionEntity entity, Var return_var, List<Expr> args)
 	{
 		Label return_label = new Label();
@@ -305,9 +310,9 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		return null;
 	}
 
-	private Stack<Label> cond_label_stack = new Stack<>();
-	private Stack<Label> incr_label_stack = new Stack<>();
-	private Stack<Label> end_label_stack = new Stack<>();
+	private final Stack<Label> cond_label_stack = new Stack<>();
+	private final Stack<Label> incr_label_stack = new Stack<>();
+	private final Stack<Label> end_label_stack = new Stack<>();
 
 	@Override
 	public Void visit(WhileNode node)

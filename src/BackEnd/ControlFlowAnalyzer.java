@@ -1,7 +1,6 @@
 package BackEnd;
 
 import Entity.FunctionEntity;
-import Entity.ParameterEntity;
 import INS.InsCJump;
 import INS.InsLabel;
 import INS.Instruction;
@@ -28,7 +27,7 @@ public class ControlFlowAnalyzer
 				continue;
 			build_basic_block(functionEntity);
 			build_cfg(functionEntity);
-			Optimaize(functionEntity);
+			Optimize(functionEntity);
 			layoutBasicBlock(functionEntity);
 		}
 	}
@@ -150,7 +149,7 @@ public class ControlFlowAnalyzer
 		entity.setIns(null);
 	}
 
-	private void Optimaize(FunctionEntity entity)
+	private void Optimize(FunctionEntity entity)
 	{
 		boolean modified = true;
 		while (modified)
