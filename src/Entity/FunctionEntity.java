@@ -17,9 +17,9 @@ public class FunctionEntity extends Entity {
     private boolean is_lib_function = false;
     private boolean is_inlined = false;
 
-    private List<ParameterEntity> parameterEntityList;
-    private BlockNode body;
-    private Type return_type;
+    private final List<ParameterEntity> parameterEntityList;
+    private final BlockNode body;
+    private final Type return_type;
 
     public FunctionEntity(String name, Location location, Type return_type, List<ParameterEntity> parameterEntityList, BlockNode body)
     {
@@ -109,8 +109,6 @@ public class FunctionEntity extends Entity {
             visited = new HashMap<>();
             is_inlined = !find_loop(this, this);
             stmt_size = stmtSize(body);
-            if (stmt_size > 8)
-                is_inlined = false;
         }
     }
 
@@ -161,7 +159,7 @@ public class FunctionEntity extends Entity {
         return true;
     }
 
-    private Set<FunctionEntity> calls = new HashSet<>();
+    private final Set<FunctionEntity> calls = new HashSet<>();
     public void add_call(FunctionEntity entity) {calls.add(entity);}
 
     public Set<FunctionEntity> getCalls()

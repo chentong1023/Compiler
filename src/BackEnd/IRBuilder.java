@@ -6,6 +6,7 @@ import ExceptionS.InternalErrorS;
 import FrontEnd.ASTVisitor;
 import IR.*;
 import IR.Binary.BinaryOp;
+import Operand.Reference;
 import Type.*;
 import Utils.Pair;
 
@@ -232,6 +233,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 			scope.insert(variableEntity);
 			map.put(parameterEntity, variableEntity);
 			add_assign(new Var(variableEntity), iterator.next());
+			variableEntity.setReference(new Reference(variableEntity));
 		}
 		current_scope = scope;
 		scopeStack.push(current_scope);
@@ -443,7 +445,6 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 	{
 		clear_assign_table();
 		FunctionEntity entity = node.function_type().getEntity();
-		if (current_function != null) current_function.add_call(entity);
 		if (entity.getName().equals("print"))
 		{
 			expand_print(node.getArgs().get(0), false, true);
@@ -459,7 +460,7 @@ public class IRBuilder implements ASTVisitor<Void, Expr>
 		{
 			args.add(visit_expr(arg));
 		}
-		if (Enable_Function_Inline && entity.is_inlined() || (Enable_Self_Inline && entity == current_function && entity.self_inline(inline_mode)))
+		if ((Enable_Function_Inline && entity.is_inlined()) || (Enable_Self_Inline && entity == current_function && entity.self_inline(inline_mode)))
 		{
 			if (expr_depth > 1)
 			{

@@ -15,3 +15,4 @@ debug.info
 /lib/antlr-4.8-complete.jar
 /bin/
 test.cpp
+test.ans

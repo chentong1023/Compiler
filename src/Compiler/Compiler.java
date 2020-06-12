@@ -115,6 +115,8 @@ public class Compiler {
         ast.checkSymbolTable();
         ast.checkType();
 
+        Inline_checker inline_checker = new Inline_checker(ast);
+        inline_checker.check_inline();
         IRBuilder irBuilder = new IRBuilder(ast);
         irBuilder.generate_IR();
 

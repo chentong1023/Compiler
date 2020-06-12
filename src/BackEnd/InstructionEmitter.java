@@ -17,9 +17,9 @@ import static Compiler.Defines.*;
 
 public class InstructionEmitter implements IRVisitor
 {
-	private List<IR> global_initializer;
-	private Scope global_scope;
-	private List<FunctionEntity> functionEntities;
+	private final List<IR> global_initializer;
+	private final Scope global_scope;
+	private final List<FunctionEntity> functionEntities;
 
 	private List<Instruction> ins;
 	private FunctionEntity currentFunction;
@@ -62,6 +62,7 @@ public class InstructionEmitter implements IRVisitor
 	private List<Instruction> emit_function(FunctionEntity entity)
 	{
 //		System.err.println("~~~~" + entity.getName() + "~~~~");
+		if (entity.is_inlined()) return null;
 		int call_size = entity.getCalls().size();
 		for (FunctionEntity call : entity.getCalls())
 		{
@@ -112,10 +113,10 @@ public class InstructionEmitter implements IRVisitor
 	}
 
 	private int expr_depth = 0;
-	private Map<Entity, Entity> global_local_map = new HashMap<>();
+	private final Map<Entity, Entity> global_local_map = new HashMap<>();
 	private Set<Entity> used_global;
 
-	private Map<String, InsLabel> labelMap = new HashMap<>();
+	private final Map<String, InsLabel> labelMap = new HashMap<>();
 	private InsLabel getLabel(String name)
 	{
 		InsLabel ret = labelMap.get(name);
